@@ -1,0 +1,82 @@
+processo
+
+public override string ToString()
+        {
+            return string.Format("Id: {0} - Data de inicio: {1:dd}/{1:MM}/{1:yyy} - Promotor: {2} - Estado: {3}", this.Id, this.DataInicio, this.Promotor.Nome, this.EstadoProcesso);
+        }
+
+promotor
+
+public override string ToString()
+        {
+            return string.Format("{0} ({1})",this.Nome, this.NIF);
+        }
+
+estado
+
+public override string ToString()
+        {
+            return string.Format("{0}", this.DescricaoEstado);
+        }
+
+Funcionario
+
+public override string ToString()
+        {
+            return string.Format("{0} ({1})", this.Nome, this.Numero);
+        }
+
+Projeto
+
+public override string ToString()
+        {
+            return string.Format("Id: {0} - Tipo: {1}", this.Id , this.TipoProjeto.Designacao);
+        }
+
+tipoprojeto
+
+public override string ToString()
+        {
+            return this.Designacao;
+        }
+
+tipodocumento
+
+public override string ToString()
+        {
+            return this.Designacao;
+        }
+
+
+TipoProjeto:
+
+365 Licenciamento de obra null
+120 Projeto de Arquitectura 1
+250 Projeto de Especialidade 1
+30 Projeto de Saneamento 3
+
+Estado:
+Concluido
+Por avaliar
+Em avaliação
+
+Tipos de documentos:
+
+Terreno
+Titulo de registo
+Identificação do requerente
+Proposta de crédito
+Liquidação de IRS
+Extrato bancário
+
+
+DUVIDAS:
+
+Funcionarios - Não sabemos como fazer alterações e eliminar em duas tabelas ao mesmo tempo -resolvido
+	     - Erro no click da DataGrid -resolvido
+
+Projetos - Não conseguimos fazer a validação do registar -por resolver
+	 - Como ir buscar de outra tabela no DataGridView - resolvido
+
+Parecer/Documentos - Como vai funcionar aligação entre os dois -resolvido
+		   - (Parecer) Erro no click da DataGrid -resolvido

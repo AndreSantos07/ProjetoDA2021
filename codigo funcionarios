@@ -1,0 +1,193 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+
+    public partial class Funcionarios : Form
+    {
+
+        private Model1Container camera;
+        public int idenviar = -1;
+
+        public Funcionarios()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            string nome = tbNome.Text;
+            int extencao = Convert.ToInt32(tbExtencao.Text);
+            //TipoProjeto tp = (TipoProjeto)cbEspecialidade.SelectedItem;
+
+            Funcionario f = new Funcionario()
+            {
+                Nome = nome,
+                Extencao = extencao
+            };
+
+            camera.FuncionarioSet.Add(f);
+
+            camera.SaveChanges();
+
+
+            /*camera.EspecialistaSet.Add(new Especialista()
+            {
+                TipoProjetoId = tp.Id,
+                FuncionarioNumero = f.Numero
+            });
+            camera.SaveChanges();*/
+
+
+            dataGridViewFuncionarios.DataSource = null;
+            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+            tbNome.Text = null;
+            tbExtencao.Text = null;
+            //cbEspecialidade.SelectedIndex = -1;
+
+        }
+
+        private void Funcionarios_Load(object sender, EventArgs e)
+        {
+            dataGridViewFuncionarios.DataSource = null;
+            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+            /*cbEspecialidade.DataSource = null;
+            cbEspecialidade.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();*/
+
+            //cbEspecialidade.SelectedIndex = -1;
+            tbNome.Clear();
+            tbExtencao.Clear();
+        }
+
+        private void btGuardarAlt_Click(object sender, EventArgs e)
+        {
+            Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+            //TipoProjeto tipo = (TipoProjeto)cbEspecialidade.SelectedItem;
+
+            /*camera.Dispose();
+            camera = new Model1Container();
+            var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;*/
+
+            /*Especialista especialidade = esp.ToList<Especialista>()[0];*/
+
+            f.Nome = tbNome.Text;
+            f.Extencao = Convert.ToInt32(tbExtencao.Text);
+            camera.SaveChanges();
+
+            /*especialidade.TipoProjetoId = tipo.Id;
+
+            camera.SaveChanges();*/
+
+
+            dataGridViewFuncionarios.DataSource = null;
+            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+            tbNome.Text = null;
+            tbExtencao.Text = null;
+            //cbEspecialidade.SelectedIndex = -1;
+
+            btGuardarAlt.Enabled = false;
+            btRegistar.Enabled = true;
+        }
+
+        private void dataGridViewFuncionarios_Click(object sender, EventArgs e)
+        {
+            //ERRO
+            Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+
+            if (f != null)
+            {
+
+                /*var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;
+                Especialista especialista = esp.ToList<Especialista>()[0];
+                var tipo = from TipoProjeto in camera.TipoProjetoSet where TipoProjeto.Id.Equals(especialista.TipoProjetoId) select TipoProjeto;*/
+
+                tbNome.Text = f.Nome;
+                tbExtencao.Text = f.Extencao.ToString();
+                idenviar = f.Numero;
+
+                //TipoProjeto tipop = tipo.ToList<TipoProjeto>()[0];
+
+                //cbEspecialidade.SelectedIndex = getindice(cbEspecialidade, tipop);
+                //cbEspecialidade.SelectedIndex = 0;
+
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+                btProjetos.Enabled = true;
+                btespecialidade.Enabled = true;
+            }
+
+           
+        }
+
+        private int getindice(ComboBox cb, TipoProjeto tp)
+        {
+            for(int i = 0; i < cb.Items.Count; i++)
+            {
+                if (((TipoProjeto)cb.Items[i]).Id == tp.Id)
+                    return i;
+            }
+
+            return -1;
+        }
+
+        private void btLimpar_Click(object sender, EventArgs e)
+        {
+            tbNome.Clear();
+            tbExtencao.Clear();
+            idenviar = -1;
+            //cbEspecialidade.SelectedIndex = -1;
+
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+            btProjetos.Enabled = false;
+            btespecialidade.Enabled = false;
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            //Por fazer
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o funcionario?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+                camera.FuncionarioSet.Remove(f);
+                camera.SaveChanges();
+
+                //cbEspecialidade.SelectedIndex = -1;
+                tbExtencao.Clear();
+                tbNome.Clear();
+
+                dataGridViewFuncionarios.DataSource = null;
+                dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+                btGuardarAlt.Enabled = false;
+                btRegistar.Enabled = true;
+            }
+        }
+
+        private void btProjetos_Click(object sender, EventArgs e)
+        {
+            ProjetosAtribuidos pa = new ProjetosAtribuidos(idenviar);
+            pa.Show();
+        }
+
+        private void btespecialidade_Click(object sender, EventArgs e)
+        {
+            Especialidades esp = new Especialidades(idenviar);
+            esp.Show();
+            
+        }
+    }
+}

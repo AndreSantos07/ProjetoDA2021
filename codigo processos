@@ -1,0 +1,154 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class Processos : Form
+    {
+
+        private Model1Container camera;
+        public Processos()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Processos_Load(object sender, EventArgs e)
+        {
+            dataGridViewProcessos.DataSource = null;
+            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+            cbPromotor.DataSource = null;
+            cbPromotor.DataSource = camera.PromotorSet.ToList<Promotor>();
+            cbPromotor.SelectedIndex = -1;
+
+            cbPromotorList.DataSource = null;
+            cbPromotorList.DataSource = camera.PromotorSet.ToList<Promotor>();
+            cbPromotorList.SelectedIndex = -1;
+
+            cbEstado.DataSource = null;
+            cbEstado.DataSource = camera.EstadoProcessoSet.ToList<EstadoProcesso>();
+            cbEstado.SelectedIndex = -1;
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            DateTime data = dtDataInicio.Value;
+            Promotor p = (Promotor)cbPromotor.SelectedItem;
+            EstadoProcesso ep = (EstadoProcesso)cbEstado.SelectedItem;
+
+            camera.ProcessoSet.Add(new Processo()
+            {
+                DataInicio = data,
+                PromotorNIF = p.NIF,
+                EstadoProcessoId = ep.Id
+            });
+            camera.SaveChanges();
+
+            dataGridViewProcessos.DataSource = null;
+            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+            dtDataInicio.ResetText();
+            cbPromotor.SelectedIndex = -1;
+            cbEstado.SelectedIndex = -1;
+        }
+
+        private void listProcessos_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btGuardarAlt_Click(object sender, EventArgs e)
+        {
+            Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+            Promotor promotor = (Promotor)cbPromotor.SelectedItem;
+            EstadoProcesso estado = (EstadoProcesso)cbEstado.SelectedItem;
+
+            p.DataInicio = dtDataInicio.Value;
+            p.PromotorNIF = promotor.NIF;
+            p.EstadoProcessoId = estado.Id;
+
+            camera.SaveChanges();
+
+            dataGridViewProcessos.DataSource = null;
+            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+            dtDataInicio.ResetText();
+            cbEstado.SelectedIndex = -1;
+            cbPromotor.SelectedIndex = -1;
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o processo?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+                camera.ProcessoSet.Remove(p);
+                camera.SaveChanges();
+
+                dtDataInicio.ResetText();
+                cbEstado.SelectedIndex = -1;
+                cbPromotor.SelectedIndex = -1;
+
+                dataGridViewProcessos.DataSource = null;
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            dtDataInicio.ResetText();
+            cbEstado.SelectedIndex = -1;
+            cbPromotor.SelectedIndex = -1;
+
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+        }
+
+        private void btPesquisar_Click(object sender, EventArgs e)
+        {
+            Promotor p = (Promotor)cbPromotorList.SelectedItem;
+
+            camera.Dispose();
+            camera = new Model1Container();
+            (from processo in camera.ProcessoSet where processo.PromotorNIF.Equals(p.NIF) select processo).ToList();
+
+            dataGridViewProcessos.DataSource = camera.ProcessoSet.Local.ToList<Processo>();
+
+        }
+
+        private void btMostrarTodos_Click(object sender, EventArgs e)
+        {
+            cbPromotorList.Text = null;
+            dataGridViewProcessos.DataSource = null;
+            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+        }
+
+        private void dataGridViewProcessos_Click(object sender, EventArgs e)
+        {
+            Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+            dtDataInicio.Value = p.DataInicio;
+            cbPromotor.Text = p.Promotor.ToString();
+            cbEstado.Text = p.EstadoProcesso.ToString();
+
+            btGuardarAlt.Enabled = true;
+            btRegistar.Enabled = false;
+        }
+    }
+}

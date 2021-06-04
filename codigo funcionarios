@@ -16,6 +16,7 @@ namespace Projeto
 
         private Model1Container camera;
         public int idenviar = -1;
+        public string nomeenviar;
 
         public Funcionarios()
         {
@@ -25,110 +26,171 @@ namespace Projeto
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
-            string nome = tbNome.Text;
-            int extencao = Convert.ToInt32(tbExtencao.Text);
-            //TipoProjeto tp = (TipoProjeto)cbEspecialidade.SelectedItem;
-
-            Funcionario f = new Funcionario()
+            try
             {
-                Nome = nome,
-                Extencao = extencao
-            };
+                string nome = tbNome.Text;
+                int extencao = Convert.ToInt32(tbExtencao.Text);
+                //TipoProjeto tp = (TipoProjeto)cbEspecialidade.SelectedItem;
 
-            camera.FuncionarioSet.Add(f);
+                Funcionario f = new Funcionario()
+                {
+                    Nome = nome,
+                    Extencao = extencao
+                };
 
-            camera.SaveChanges();
+                camera.FuncionarioSet.Add(f);
+
+                camera.SaveChanges();
 
 
-            /*camera.EspecialistaSet.Add(new Especialista()
+                /*camera.EspecialistaSet.Add(new Especialista()
+                {
+                    TipoProjetoId = tp.Id,
+                    FuncionarioNumero = f.Numero
+                });
+                camera.SaveChanges();*/
+
+
+                dataGridViewFuncionarios.DataSource = null;
+                dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+                tbNome.Text = null;
+                tbExtencao.Text = null;
+                //cbEspecialidade.SelectedIndex = -1;
+            }
+            catch (FormatException fex)
             {
-                TipoProjetoId = tp.Id,
-                FuncionarioNumero = f.Numero
-            });
-            camera.SaveChanges();*/
+                MessageBox.Show("Erro ao tentar converter a extensao\n\r" + fex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (OverflowException oex)
+            {
+                MessageBox.Show("Erro ao tentar converter a extensao\n\r" + oex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o funcionario\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o funcionario\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-
-            dataGridViewFuncionarios.DataSource = null;
-            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
-
-            tbNome.Text = null;
-            tbExtencao.Text = null;
-            //cbEspecialidade.SelectedIndex = -1;
 
         }
 
         private void Funcionarios_Load(object sender, EventArgs e)
         {
-            dataGridViewFuncionarios.DataSource = null;
-            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+            try
+            {
+                dataGridViewFuncionarios.DataSource = null;
+                dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
 
-            /*cbEspecialidade.DataSource = null;
-            cbEspecialidade.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();*/
+                /*cbEspecialidade.DataSource = null;
+                cbEspecialidade.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();*/
 
-            //cbEspecialidade.SelectedIndex = -1;
-            tbNome.Clear();
-            tbExtencao.Clear();
+                //cbEspecialidade.SelectedIndex = -1;
+                tbNome.Clear();
+                tbExtencao.Clear();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
-            Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
-            //TipoProjeto tipo = (TipoProjeto)cbEspecialidade.SelectedItem;
+            try
+            {
+                Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+                //TipoProjeto tipo = (TipoProjeto)cbEspecialidade.SelectedItem;
 
-            /*camera.Dispose();
-            camera = new Model1Container();
-            var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;*/
+                /*camera.Dispose();
+                camera = new Model1Container();
+                var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;*/
 
-            /*Especialista especialidade = esp.ToList<Especialista>()[0];*/
+                /*Especialista especialidade = esp.ToList<Especialista>()[0];*/
 
-            f.Nome = tbNome.Text;
-            f.Extencao = Convert.ToInt32(tbExtencao.Text);
-            camera.SaveChanges();
+                f.Nome = tbNome.Text;
+                f.Extencao = Convert.ToInt32(tbExtencao.Text);
+                camera.SaveChanges();
 
-            /*especialidade.TipoProjetoId = tipo.Id;
+                /*especialidade.TipoProjetoId = tipo.Id;
 
-            camera.SaveChanges();*/
+                camera.SaveChanges();*/
 
 
-            dataGridViewFuncionarios.DataSource = null;
-            dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                dataGridViewFuncionarios.DataSource = null;
+                dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
 
-            tbNome.Text = null;
-            tbExtencao.Text = null;
-            //cbEspecialidade.SelectedIndex = -1;
+                tbNome.Text = null;
+                tbExtencao.Text = null;
+                //cbEspecialidade.SelectedIndex = -1;
 
-            btGuardarAlt.Enabled = false;
-            btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+                btRegistar.Enabled = true;
+            }
+            catch (FormatException fex)
+            {
+                MessageBox.Show("Erro ao tentar converter a extensao\n\r" + fex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (OverflowException oex)
+            {
+                MessageBox.Show("Erro ao tentar converter a extensao\n\r" + oex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o funcionario\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o funcionario\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridViewFuncionarios_Click(object sender, EventArgs e)
         {
-            //ERRO
-            Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
-
-            if (f != null)
+            try
             {
+                Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
 
-                /*var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;
-                Especialista especialista = esp.ToList<Especialista>()[0];
-                var tipo = from TipoProjeto in camera.TipoProjetoSet where TipoProjeto.Id.Equals(especialista.TipoProjetoId) select TipoProjeto;*/
+                if (f != null)
+                {
 
-                tbNome.Text = f.Nome;
-                tbExtencao.Text = f.Extencao.ToString();
-                idenviar = f.Numero;
+                    /*var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(f.Numero) select Especialista;
+                    Especialista especialista = esp.ToList<Especialista>()[0];
+                    var tipo = from TipoProjeto in camera.TipoProjetoSet where TipoProjeto.Id.Equals(especialista.TipoProjetoId) select TipoProjeto;*/
 
-                //TipoProjeto tipop = tipo.ToList<TipoProjeto>()[0];
+                    tbNome.Text = f.Nome;
+                    tbExtencao.Text = f.Extencao.ToString();
+                    idenviar = f.Numero;
+                    nomeenviar = f.Nome;
 
-                //cbEspecialidade.SelectedIndex = getindice(cbEspecialidade, tipop);
-                //cbEspecialidade.SelectedIndex = 0;
+                    //TipoProjeto tipop = tipo.ToList<TipoProjeto>()[0];
 
-                btGuardarAlt.Enabled = true;
-                btRegistar.Enabled = false;
-                btProjetos.Enabled = true;
-                btespecialidade.Enabled = true;
+                    //cbEspecialidade.SelectedIndex = getindice(cbEspecialidade, tipop);
+                    //cbEspecialidade.SelectedIndex = 0;
+
+                    btGuardarAlt.Enabled = true;
+                    btRegistar.Enabled = false;
+                    btProjetos.Enabled = true;
+                    btespecialidade.Enabled = true;
+                }
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-           
+
         }
 
         private int getindice(ComboBox cb, TipoProjeto tp)
@@ -147,6 +209,7 @@ namespace Projeto
             tbNome.Clear();
             tbExtencao.Clear();
             idenviar = -1;
+            nomeenviar = null;
             //cbEspecialidade.SelectedIndex = -1;
 
             btRegistar.Enabled = true;
@@ -157,30 +220,58 @@ namespace Projeto
 
         private void btEliminar_Click(object sender, EventArgs e)
         {
-            //Por fazer
+            
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o funcionario?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
             {
-                Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
-                camera.FuncionarioSet.Remove(f);
-                camera.SaveChanges();
+                try
+                {
+                    Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+                    camera.FuncionarioSet.Remove(f);
+                    camera.SaveChanges();
 
-                //cbEspecialidade.SelectedIndex = -1;
-                tbExtencao.Clear();
-                tbNome.Clear();
+                    //cbEspecialidade.SelectedIndex = -1;
+                    tbExtencao.Clear();
+                    tbNome.Clear();
 
-                dataGridViewFuncionarios.DataSource = null;
-                dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                    dataGridViewFuncionarios.DataSource = null;
+                    dataGridViewFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
 
-                btGuardarAlt.Enabled = false;
-                btRegistar.Enabled = true;
+                    btGuardarAlt.Enabled = false;
+                    btRegistar.Enabled = true;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o funcionario\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o funcionario\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void btProjetos_Click(object sender, EventArgs e)
         {
-            ProjetosAtribuidos pa = new ProjetosAtribuidos(idenviar);
-            pa.Show();
+            try
+            {
+                camera.Dispose();
+                camera = new Model1Container();
+
+                var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(idenviar) select Especialista;
+                Especialista especialista = esp.ToList<Especialista>()[0];
+
+                ProjetosAtribuidos pa = new ProjetosAtribuidos(nomeenviar, especialista);
+                pa.Show();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btespecialidade_Click(object sender, EventArgs e)

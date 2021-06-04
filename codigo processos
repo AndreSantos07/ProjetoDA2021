@@ -27,67 +27,122 @@ namespace Projeto
 
         private void Processos_Load(object sender, EventArgs e)
         {
-            dataGridViewProcessos.DataSource = null;
-            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+            try
+            {
+                dataGridViewProcessos.DataSource = null;
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbPromotor.DataSource = null;
-            cbPromotor.DataSource = camera.PromotorSet.ToList<Promotor>();
-            cbPromotor.SelectedIndex = -1;
+            try
+            {
+                cbPromotor.DataSource = null;
+                cbPromotor.DataSource = camera.PromotorSet.ToList<Promotor>();
+                cbPromotor.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbPromotorList.DataSource = null;
-            cbPromotorList.DataSource = camera.PromotorSet.ToList<Promotor>();
-            cbPromotorList.SelectedIndex = -1;
+            try
+            {
+                cbPromotorList.DataSource = null;
+                cbPromotorList.DataSource = camera.PromotorSet.ToList<Promotor>();
+                cbPromotorList.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbEstado.DataSource = null;
-            cbEstado.DataSource = camera.EstadoProcessoSet.ToList<EstadoProcesso>();
-            cbEstado.SelectedIndex = -1;
+            try
+            {
+                cbEstado.DataSource = null;
+                cbEstado.DataSource = camera.EstadoProcessoSet.ToList<EstadoProcesso>();
+                cbEstado.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela EstadoProcesso\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
-            DateTime data = dtDataInicio.Value;
-            Promotor p = (Promotor)cbPromotor.SelectedItem;
-            EstadoProcesso ep = (EstadoProcesso)cbEstado.SelectedItem;
-
-            camera.ProcessoSet.Add(new Processo()
+            try
             {
-                DataInicio = data,
-                PromotorNIF = p.NIF,
-                EstadoProcessoId = ep.Id
-            });
-            camera.SaveChanges();
+                DateTime data = dtDataInicio.Value;
+                Promotor p = (Promotor)cbPromotor.SelectedItem;
+                EstadoProcesso ep = (EstadoProcesso)cbEstado.SelectedItem;
 
-            dataGridViewProcessos.DataSource = null;
-            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+                camera.ProcessoSet.Add(new Processo()
+                {
+                    DataInicio = data,
+                    PromotorNIF = p.NIF,
+                    EstadoProcessoId = ep.Id
+                });
+                camera.SaveChanges();
 
-            dtDataInicio.ResetText();
-            cbPromotor.SelectedIndex = -1;
-            cbEstado.SelectedIndex = -1;
+                dataGridViewProcessos.DataSource = null;
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+                dtDataInicio.ResetText();
+                cbPromotor.SelectedIndex = -1;
+                cbEstado.SelectedIndex = -1;
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o processo\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o processo\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
-        private void listProcessos_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
-            Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
-            Promotor promotor = (Promotor)cbPromotor.SelectedItem;
-            EstadoProcesso estado = (EstadoProcesso)cbEstado.SelectedItem;
+            try
+            {
+                Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+                Promotor promotor = (Promotor)cbPromotor.SelectedItem;
+                EstadoProcesso estado = (EstadoProcesso)cbEstado.SelectedItem;
 
-            p.DataInicio = dtDataInicio.Value;
-            p.PromotorNIF = promotor.NIF;
-            p.EstadoProcessoId = estado.Id;
+                p.DataInicio = dtDataInicio.Value;
+                p.PromotorNIF = promotor.NIF;
+                p.EstadoProcessoId = estado.Id;
 
-            camera.SaveChanges();
+                camera.SaveChanges();
 
-            dataGridViewProcessos.DataSource = null;
-            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+                dataGridViewProcessos.DataSource = null;
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
 
-            dtDataInicio.ResetText();
-            cbEstado.SelectedIndex = -1;
-            cbPromotor.SelectedIndex = -1;
+                dtDataInicio.ResetText();
+                cbEstado.SelectedIndex = -1;
+                cbPromotor.SelectedIndex = -1;
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o processo\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o processo\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btEliminar_Click(object sender, EventArgs e)
@@ -95,19 +150,35 @@ namespace Projeto
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o processo?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
             {
-                Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
-                camera.ProcessoSet.Remove(p);
-                camera.SaveChanges();
+                try
+                {
+                    Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+                    camera.ProcessoSet.Remove(p);
+                    camera.SaveChanges();
 
-                dtDataInicio.ResetText();
-                cbEstado.SelectedIndex = -1;
-                cbPromotor.SelectedIndex = -1;
+                    dtDataInicio.ResetText();
+                    cbEstado.SelectedIndex = -1;
+                    cbPromotor.SelectedIndex = -1;
 
-                dataGridViewProcessos.DataSource = null;
-                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+                    dataGridViewProcessos.DataSource = null;
+                    dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
 
-                btRegistar.Enabled = true;
-                btGuardarAlt.Enabled = false;
+                    btRegistar.Enabled = true;
+                    btGuardarAlt.Enabled = false;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o processo\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o processo\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
             }
         }
 
@@ -123,32 +194,53 @@ namespace Projeto
 
         private void btPesquisar_Click(object sender, EventArgs e)
         {
-            Promotor p = (Promotor)cbPromotorList.SelectedItem;
+            try
+            {
+                Promotor p = (Promotor)cbPromotorList.SelectedItem;
 
-            camera.Dispose();
-            camera = new Model1Container();
-            (from processo in camera.ProcessoSet where processo.PromotorNIF.Equals(p.NIF) select processo).ToList();
+                camera.Dispose();
+                camera = new Model1Container();
+                (from processo in camera.ProcessoSet where processo.PromotorNIF.Equals(p.NIF) select processo).ToList();
 
-            dataGridViewProcessos.DataSource = camera.ProcessoSet.Local.ToList<Processo>();
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.Local.ToList<Processo>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
         }
 
         private void btMostrarTodos_Click(object sender, EventArgs e)
         {
-            cbPromotorList.Text = null;
-            dataGridViewProcessos.DataSource = null;
-            dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+            try
+            {
+                cbPromotorList.Text = null;
+                dataGridViewProcessos.DataSource = null;
+                dataGridViewProcessos.DataSource = camera.ProcessoSet.ToList<Processo>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridViewProcessos_Click(object sender, EventArgs e)
         {
-            Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
-            dtDataInicio.Value = p.DataInicio;
-            cbPromotor.Text = p.Promotor.ToString();
-            cbEstado.Text = p.EstadoProcesso.ToString();
+            try
+            {
+                Processo p = (Processo)dataGridViewProcessos.SelectedRows[0].DataBoundItem;
+                dtDataInicio.Value = p.DataInicio;
+                cbPromotor.Text = p.Promotor.ToString();
+                cbEstado.Text = p.EstadoProcesso.ToString();
 
-            btGuardarAlt.Enabled = true;
-            btRegistar.Enabled = false;
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

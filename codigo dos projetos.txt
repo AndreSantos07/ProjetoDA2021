@@ -12,7 +12,7 @@ namespace Projeto
 {
     public partial class Projetos : Form
     {
-        int IdprojetoEnviar;
+        public String teste = "teste";
         private Model1Container camera;
 
         public Projetos()
@@ -25,72 +25,124 @@ namespace Projeto
         {
             //dataGridViewProjetos.DataSource = null;
             //dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
-            bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
-            bindingSourceProjetos.ResetBindings(false);
+            try
+            {
+                bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                bindingSourceProjetos.ResetBindings(false);
+            }
+            catch(ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbTipoProjeto.DataSource = null;
-            cbTipoProjeto.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();
-            cbTipoProjeto.SelectedIndex = -1;
+            try
+            {
+                cbTipoProjeto.DataSource = null;
+                cbTipoProjeto.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();
+                cbTipoProjeto.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela TipoProjeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbNrProcesso.DataSource = null;
-            cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
-            cbNrProcesso.SelectedIndex = -1;
+            try
+            {
+                cbNrProcesso.DataSource = null;
+                cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+                cbNrProcesso.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            cbNrProcessoList.DataSource = null;
-            cbNrProcessoList.DataSource = camera.ProcessoSet.ToList<Processo>();
-            cbNrProcessoList.SelectedIndex = -1;
+            try
+            {
+                cbNrProcessoList.DataSource = null;
+                cbNrProcessoList.DataSource = camera.ProcessoSet.ToList<Processo>();
+                cbNrProcessoList.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btDocumentação_Click(object sender, EventArgs e)
         {
-            Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;           
+            try
+            {
+                Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
+
+                Documentacao d = new Documentacao(p);
+                d.Show();
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Erro ao abrir o form Documentacao\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             
-            Documentacao d = new Documentacao(p);
-            d.Show();
 
         }
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
-            DateTime dataEntrada = dtEntrada.Value;
-            String estado = tbEstado.Text;
-            TipoProjeto tipo = (TipoProjeto)cbTipoProjeto.SelectedItem;
-            DateTime dataAprovacao = dtDataAprov.Value;
-            Processo p = (Processo)cbNrProcesso.SelectedItem;
-            
-            /*foreach (Projeto projeto in p.Projeto)
+            try
             {
-                
-                if(tipo.TipoProjetoAscendenteId != projeto.TipoProjetoId)
+                DateTime dataEntrada = dtEntrada.Value;
+                String estado = tbEstado.Text;
+                TipoProjeto tipo = (TipoProjeto)cbTipoProjeto.SelectedItem;
+                DateTime dataAprovacao = dtDataAprov.Value;
+                Processo p = (Processo)cbNrProcesso.SelectedItem;
+
+                /*foreach (Projeto projeto in p.Projeto)
                 {
-                    MessageBox.Show("Precisa criar o {0} primeiro", projeto.TipoProjeto.Designacao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    cbTipoProjeto.Focus();
-                }
-                else
-                {*/
-                    camera.ProjetoSet.Add(new Projeto()
+
+                    if(tipo.TipoProjetoAscendenteId != projeto.TipoProjetoId)
                     {
-                        DataEntrada = dataEntrada,
-                        EstadoProjeto = estado,
-                        TipoProjetoId = tipo.Id,
-                        DataAprovacao = dataAprovacao,
-                        ProcessoId = p.Id
-                    });
-                    camera.SaveChanges();
+                        MessageBox.Show("Precisa criar o {0} primeiro", projeto.TipoProjeto.Designacao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        cbTipoProjeto.Focus();
+                    }
+                    else
+                    {*/
+                camera.ProjetoSet.Add(new Projeto()
+                {
+                    DataEntrada = dataEntrada,
+                    EstadoProjeto = estado,
+                    TipoProjetoId = tipo.Id,
+                    DataAprovacao = dataAprovacao,
+                    ProcessoId = p.Id
+                });
+                camera.SaveChanges();
 
-            //dataGridViewProjetos.DataSource = null;
-            //dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                //dataGridViewProjetos.DataSource = null;
+                //dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
 
-                    bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
-                    bindingSourceProjetos.ResetBindings(false);
+                bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                bindingSourceProjetos.ResetBindings(false);
 
-                    dtEntrada.ResetText();
-                    dtDataAprov.ResetText();
-                    tbEstado.Text = null;
-                    cbTipoProjeto.SelectedIndex = -1;
-                    cbNrProcesso.SelectedIndex = -1;
-            /*}
-        }*/
+                dtEntrada.ResetText();
+                dtDataAprov.ResetText();
+                tbEstado.Text = null;
+                cbTipoProjeto.SelectedIndex = -1;
+                cbNrProcesso.SelectedIndex = -1;
+                /*}
+            }*/
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void cbTipoProjeto_SelectedIndexChanged(object sender, EventArgs e)
@@ -100,7 +152,7 @@ namespace Projeto
 
         private void cbTipoProjeto_Leave(object sender, EventArgs e)
         {
-            if(cbTipoProjeto.SelectedIndex != -1)
+            try
             {
                 DateTime dataEntrada = dtEntrada.Value;
                 TipoProjeto tipo = (TipoProjeto)cbTipoProjeto.SelectedItem;
@@ -108,47 +160,71 @@ namespace Projeto
 
                 dtDataAprov.Value = dataAprovacao;
             }
+            catch (ArgumentOutOfRangeException aorex) 
+            {
+                MessageBox.Show("Erro ao calcular a data de aprovação\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            
         }
 
         private void dataGridViewProjetos_Click(object sender, EventArgs e)
         {
-            Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
-            dtEntrada.Value = p.DataEntrada;
-            tbEstado.Text = p.EstadoProjeto;
-            cbTipoProjeto.Text = p.TipoProjeto.ToString();
-            dtDataAprov.Value = p.DataAprovacao;
-            cbNrProcesso.Text = p.Processo.ToString();
+            try
+            {
+                Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
+                dtEntrada.Value = p.DataEntrada;
+                tbEstado.Text = p.EstadoProjeto;
+                cbTipoProjeto.Text = p.TipoProjeto.ToString();
+                dtDataAprov.Value = p.DataAprovacao;
+                cbNrProcesso.Text = p.Processo.ToString();
 
-            btGuardarAlt.Enabled = true;
-            btRegistar.Enabled = false;
-            btDocumentação.Enabled = true;
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
-            Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
-            TipoProjeto tipo = (TipoProjeto)cbTipoProjeto.SelectedItem;
-            Processo processo = (Processo)cbNrProcesso.SelectedItem;
+            try
+            {
+                Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
+                TipoProjeto tipo = (TipoProjeto)cbTipoProjeto.SelectedItem;
+                Processo processo = (Processo)cbNrProcesso.SelectedItem;
 
-            p.DataEntrada = dtEntrada.Value;
-            p.EstadoProjeto = tbEstado.Text;
-            p.TipoProjetoId = tipo.Id;
-            p.DataAprovacao = dtDataAprov.Value;
-            p.ProcessoId = processo.Id;
+                p.DataEntrada = dtEntrada.Value;
+                p.EstadoProjeto = tbEstado.Text;
+                p.TipoProjetoId = tipo.Id;
+                p.DataAprovacao = dtDataAprov.Value;
+                p.ProcessoId = processo.Id;
 
 
-            camera.SaveChanges();
+                camera.SaveChanges();
 
-            dataGridViewProjetos.DataSource = null;
-            dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                dataGridViewProjetos.DataSource = null;
+                dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
 
-            dtEntrada.ResetText();
-            dtDataAprov.ResetText();
-            tbEstado.Text = null;
-            cbTipoProjeto.SelectedIndex = -1;
-            cbNrProcesso.SelectedIndex = -1;
+                dtEntrada.ResetText();
+                dtDataAprov.ResetText();
+                tbEstado.Text = null;
+                cbTipoProjeto.SelectedIndex = -1;
+                cbNrProcesso.SelectedIndex = -1;
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btEliminar_Click(object sender, EventArgs e)
@@ -156,21 +232,36 @@ namespace Projeto
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o projeto?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
             {
-                Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
-                camera.ProjetoSet.Remove(p);
-                camera.SaveChanges();
+                try
+                {
+                    Projeto p = (Projeto)dataGridViewProjetos.SelectedRows[0].DataBoundItem;
+                    camera.ProjetoSet.Remove(p);
+                    camera.SaveChanges();
 
-                dtEntrada.ResetText();
-                dtDataAprov.ResetText();
-                tbEstado.Text = null;
-                cbTipoProjeto.SelectedIndex = -1;
-                cbNrProcesso.SelectedIndex = -1;
+                    dtEntrada.ResetText();
+                    dtDataAprov.ResetText();
+                    tbEstado.Text = null;
+                    cbTipoProjeto.SelectedIndex = -1;
+                    cbNrProcesso.SelectedIndex = -1;
 
-                dataGridViewProjetos.DataSource = null;
-                dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                    dataGridViewProjetos.DataSource = null;
+                    dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
 
-                btRegistar.Enabled = true;
-                btGuardarAlt.Enabled = false;
+                    btRegistar.Enabled = true;
+                    btGuardarAlt.Enabled = false;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o projeto\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o projeto\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -184,26 +275,39 @@ namespace Projeto
 
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
-            btDocumentação.Enabled = false;
         }
 
         private void btPesquisar_Click(object sender, EventArgs e)
         {
-            Processo p = (Processo)cbNrProcessoList.SelectedItem;
+            try
+            {
+                Processo p = (Processo)cbNrProcessoList.SelectedItem;
 
-            camera.Dispose();
-            camera = new Model1Container();
-            (from Projetos in camera.ProjetoSet where Projetos.ProcessoId.Equals(p.Id) select Projetos).ToList();
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Projetos in camera.ProjetoSet where Projetos.ProcessoId.Equals(p.Id) select Projetos).ToList();
 
-            dataGridViewProjetos.DataSource = null;
-            dataGridViewProjetos.DataSource = camera.ProjetoSet.Local.ToList<Projeto>();
+                dataGridViewProjetos.DataSource = null;
+                dataGridViewProjetos.DataSource = camera.ProjetoSet.Local.ToList<Projeto>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btMostrarTodos_Click(object sender, EventArgs e)
         {
-            cbNrProcessoList.Text = null;
-            dataGridViewProjetos.DataSource = null;
-            dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+            try
+            {
+                cbNrProcessoList.Text = null;
+                dataGridViewProjetos.DataSource = null;
+                dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

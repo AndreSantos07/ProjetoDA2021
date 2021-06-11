@@ -1,0 +1,84 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class AtribuirDocs : Form
+    {
+
+        private Model1Container camera;
+        public AtribuirDocs()
+        {
+            InitializeComponent();
+        }
+
+        public int numeroparcer;
+        public int idprojeto;
+
+        public AtribuirDocs(int parecernumero, int projetoid)
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+            numeroparcer = parecernumero;
+            idprojeto = projetoid;
+        }
+
+        private void AtribuirDocs_Load(object sender, EventArgs e)
+        {
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Documento in camera.DocumentoSet where Documento.ParecerNumero == numeroparcer select Documento).ToList();
+
+            dataGridViewDocumentosAtribuidos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
+
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Documento in camera.DocumentoSet where Documento.ProjetoId == idprojeto select Documento).ToList();
+
+            cbDocumento.DataSource = null;
+            cbDocumento.DataSource = camera.DocumentoSet.ToList<Documento>();
+            cbDocumento.SelectedIndex = -1;
+
+            tbNumeroParcer.Text = numeroparcer.ToString();
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            Documento d = (Documento)cbDocumento.SelectedItem;
+
+            d.ParecerNumero = numeroparcer;
+
+            camera.SaveChanges();
+
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Documento in camera.DocumentoSet where Documento.ParecerNumero == numeroparcer select Documento).ToList();
+
+            dataGridViewDocumentosAtribuidos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
+
+            cbDocumento.SelectedIndex = -1;
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            Documento d = (Documento)dataGridViewDocumentosAtribuidos.SelectedRows[0].DataBoundItem;
+
+            d.ParecerNumero = null;
+
+            camera.SaveChanges();
+
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Documento in camera.DocumentoSet where Documento.ParecerNumero == numeroparcer select Documento).ToList();
+
+            dataGridViewDocumentosAtribuidos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
+        }
+    }
+}

@@ -1,0 +1,166 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class Documentacao : Form
+    {
+
+        private Model1Container camera;
+
+        public Documentacao()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        Projeto projetoRecebido;
+
+        public Documentacao(Projeto recebido)
+        {
+            InitializeComponent();
+            projetoRecebido = recebido;
+            camera = new Model1Container();
+        }
+
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Documentacao_Load(object sender, EventArgs e)
+        {
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
+
+
+            dataGridDocumentos.DataSource = null;
+            dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
+
+            cbTipo.DataSource = null;
+            cbTipo.DataSource = camera.TipoDocumentoSet.ToList<TipoDocumento>();
+            cbTipo.SelectedIndex = -1;
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            String titulo = tbTitulo.Text;
+            DateTime dataEntrega = dtDataEntrega.Value;
+            TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
+
+            camera.DocumentoSet.Add(new Documento()
+            {
+                Titulo = titulo,
+                DataEntrega = dataEntrega,
+                TipoDocumentoId = tipo.Id,
+                ProjetoId = projetoRecebido.Id,
+                ProjetoProcessoId = projetoRecebido.ProcessoId,
+                ParecerNumero = null
+
+            });
+            camera.SaveChanges();
+
+            dataGridDocumentos.DataSource = null;
+            dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+
+            tbTitulo.ResetText();
+            dtDataEntrega.ResetText();
+            cbTipo.SelectedIndex = -1;
+            tbNrParecer.ResetText();
+        }
+
+        private void dataGridDocumentos_Click(object sender, EventArgs e)
+        {
+            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+            tbTitulo.Text = d.Titulo;
+            dtDataEntrega.Value = d.DataEntrega;
+            cbTipo.Text = d.TipoDocumento.ToString();
+            tbNrParecer.Text = d.ParecerNumero.ToString();
+
+            btGuardarAlt.Enabled = true;
+            btRegistar.Enabled = false;
+            btEliminar.Enabled = true;
+            btMostrarParecer.Enabled = true;
+        }
+
+        private void btLimpar_Click(object sender, EventArgs e)
+        {
+            tbTitulo.Text = "";
+            dtDataEntrega.ResetText();
+            cbTipo.SelectedIndex = -1;
+            tbNrParecer.Text = "";
+
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+            btEliminar.Enabled = false;
+            btMostrarParecer.Enabled = false;
+        }
+
+        private void btGuardarAlt_Click(object sender, EventArgs e)
+        {
+            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+            TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
+
+            d.Titulo = tbTitulo.Text;
+            d.DataEntrega = dtDataEntrega.Value;
+            d.TipoDocumentoId = tipo.Id;
+
+            camera.SaveChanges();
+
+            dataGridDocumentos.DataSource = null;
+            dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+
+            tbTitulo.Text = "";
+            dtDataEntrega.ResetText();
+            cbTipo.SelectedIndex = -1;
+            tbNrParecer.Text = "";
+
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+            btEliminar.Enabled = false;
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o documento?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+                camera.DocumentoSet.Remove(d);
+                camera.SaveChanges();
+
+                tbTitulo.Text = "";
+                dtDataEntrega.ResetText();
+                cbTipo.SelectedIndex = -1;
+                tbNrParecer.Text = "";
+
+                dataGridDocumentos.DataSource = null;
+                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+                btEliminar.Enabled = false;
+            }
+        }
+
+        private void btMostrarParecer_Click(object sender, EventArgs e)
+        {
+            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+
+            int idparcer = Convert.ToInt32(d.ParecerNumero);
+
+            Parceres p = new Parceres(idparcer);
+            p.Show();
+        }
+    }
+    
+}

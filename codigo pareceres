@@ -1,0 +1,270 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class Parceres : Form
+    {
+        private Model1Container camera;
+        public Parceres()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        public int idparcer = -1;
+
+        public Parceres(int idrecebido)
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+            idparcer = idrecebido;
+        }
+
+        private void Parceres_Load(object sender, EventArgs e)
+        {
+            if(idparcer != -1)
+            {
+                camera.Dispose();
+                camera = new Model1Container();
+                var parcer = from Parecer in camera.ParecerSet where Parecer.Numero.Equals(idparcer) select Parecer;
+                Parecer par = parcer.ToList<Parecer>()[0];
+
+                var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(par.ProjetoProcessoId) select Processo;
+                Processo pro = processo.ToList<Processo>()[0];
+
+                dtData.Value = par.DataParecer;
+                tbTexto.Text = par.TextoParecer;
+                cbFuncionarios.Text = par.Funcionario.ToString();
+                cbNrProjeto.Text = par.Projeto.ToString();
+                cbNrProcesso.Text = pro.ToString();
+
+                dataGridViewPareceres.DataSource = null;
+                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+
+                cbNrProcesso.DataSource = null;
+                cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+
+                cbNrProjeto.DataSource = null;
+                cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+
+                cbNrProjetoList.DataSource = null;
+                cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                cbNrProjetoList.SelectedIndex = -1;
+
+                cbFuncionarios.DataSource = null;
+                cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+
+            }
+            else
+            {
+                dataGridViewPareceres.DataSource = null;
+                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+
+                cbNrProcesso.DataSource = null;
+                cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+                cbNrProcesso.SelectedIndex = -1;
+
+                cbNrProjeto.DataSource = null;
+                cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                cbNrProjeto.SelectedIndex = -1;
+
+                cbNrProjetoList.DataSource = null;
+                cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                cbNrProjetoList.SelectedIndex = -1;
+
+                cbFuncionarios.DataSource = null;
+                cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                cbFuncionarios.SelectedIndex = -1;
+
+            }
+
+        }
+
+        public void atualizar()
+        {
+            foreach(var entity in camera.ChangeTracker.Entries())
+            {
+                entity.Reload();
+            }
+        }
+
+        private void cbNrProcesso_Leave(object sender, EventArgs e)
+        {
+            if(cbNrProcesso.SelectedIndex != -1)
+            {
+                Processo processo = (Processo)cbNrProcesso.SelectedItem;
+
+                camera.Dispose();
+                camera = new Model1Container();
+                //atualizar();
+                (from Projeto in camera.ProjetoSet where Projeto.ProcessoId.Equals(processo.Id) select Projeto).ToList();
+
+                cbNrProjeto.DataSource = camera.ProjetoSet.Local.ToList<Projeto>();
+            }
+            
+        }
+
+        private void cbNrProjeto_Leave(object sender, EventArgs e)
+        {
+            if(cbNrProjeto.SelectedIndex != -1)
+            {
+                Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Funcionario in camera.FuncionarioSet where Funcionario.Numero.Equals(projeto.TipoProjetoId) select Funcionario).ToList();
+
+                cbFuncionarios.DataSource = camera.FuncionarioSet.Local.ToList<Funcionario>();
+
+            }
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            DateTime data = dtData.Value;
+            Processo processo = (Processo)cbNrProcesso.SelectedItem;
+            Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+            Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+            string texto = tbTexto.Text;
+
+            Parecer p = new Parecer()
+            {
+                TextoParecer = texto,
+                DataParecer = data,
+                FuncionarioNumero1 = funcionario.Numero,
+                ProjetoId = projeto.Id,
+                ProjetoProcessoId = processo.Id
+            };
+
+            camera.ParecerSet.Add(p);
+
+
+            /*camera.ParecerSet.Add(new Parecer()
+            {
+                TextoParecer = texto,
+                DataParecer = data,
+                FuncionarioNumero1 = funcionario.Numero,
+                ProjetoId = projeto.Id,
+                ProjetoProcessoId = processo.Id
+            });*/
+
+            camera.SaveChanges();
+
+            dataGridViewPareceres.DataSource = null;
+            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+            btRegistar.Enabled = true;
+
+            dtData.ResetText();
+            cbFuncionarios.SelectedIndex = -1;
+            cbNrProcesso.SelectedIndex = -1;
+            cbNrProjeto.SelectedIndex = -1;
+            tbTexto.Clear();
+        }
+
+        private void btGuardarAlt_Click(object sender, EventArgs e)
+        {
+            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+            Processo processo = (Processo)cbNrProcesso.SelectedItem;
+            Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+            Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+
+
+            p.TextoParecer = tbTexto.Text;
+            p.DataParecer = dtData.Value;
+            p.FuncionarioNumero1 = funcionario.Numero;
+            p.ProjetoId = projeto.Id;
+            p.ProjetoProcessoId = processo.Id;
+
+            camera.SaveChanges();
+
+            dataGridViewPareceres.DataSource = null;
+            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+
+            tbTexto.Clear();
+            dtData.ResetText();
+            cbFuncionarios.SelectedIndex = -1;
+            cbNrProcesso.SelectedIndex = -1;
+            cbNrProjeto.SelectedIndex = -1;
+
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+            btAtribuirDoc.Enabled = false;
+        }
+
+        private void dataGridViewPareceres_Click(object sender, EventArgs e)
+        {
+            /*camera.Dispose();
+            camera = new Model1Container();*/
+
+            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+
+            tbTexto.Text = p.TextoParecer;
+            dtData.Value = p.DataParecer;
+            cbFuncionarios.Text = p.Funcionario.ToString();
+            cbNrProjeto.Text = p.Projeto.ToString();
+
+            var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(p.ProjetoProcessoId) select Processo;
+            Processo pro = processo.ToList<Processo>()[0];
+
+            cbNrProcesso.Text = pro.ToString();
+
+            btGuardarAlt.Enabled = true;
+            btRegistar.Enabled = false;
+            btAtribuirDoc.Enabled = true;
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            cbNrProjetoList.Text = null;
+            dataGridViewPareceres.DataSource = null;
+            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+        }
+
+        private void btPesquisar_Click(object sender, EventArgs e)
+        {
+            Projeto p = (Projeto)cbNrProjetoList.SelectedItem;
+
+            camera.Dispose();
+            camera = new Model1Container();
+            (from Parecer in camera.ParecerSet where Parecer.ProjetoId.Equals(p.Id) select Parecer).ToList();
+
+            dataGridViewPareceres.DataSource = camera.ParecerSet.Local.ToList<Parecer>();
+        }
+
+        private void btSair_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btAtribuirDoc_Click(object sender, EventArgs e)
+        {
+
+            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+
+            AtribuirDocs ad = new AtribuirDocs(p.Numero, p.ProjetoId);
+            ad.Show();
+        }
+
+        private void btLimpar_Click(object sender, EventArgs e)
+        {
+
+            dtData.ResetText();
+            cbNrProcesso.SelectedIndex = -1;
+            cbNrProjeto.SelectedIndex = -1;
+            cbFuncionarios.SelectedIndex = -1;
+            tbTexto.Text = "";
+
+            btAtribuirDoc.Enabled = false;
+            btRegistar.Enabled = true;
+            btGuardarAlt.Enabled = false;
+        }
+    }
+}

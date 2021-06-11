@@ -1,0 +1,179 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class Especialidades : Form
+    {
+        private Model1Container camera;
+        public Especialidades()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        public int idpesquisar;
+
+        public Especialidades(int recebido)
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+            idpesquisar = recebido;
+        }
+
+        private void Especialidades_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                if (idpesquisar != -1)
+                {
+                    //esta consulta serve para filtrar as especialidades já existentes de um funcionario
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(idpesquisar) select Especialista).ToList();
+
+                    dataGridViewEspecialidades.DataSource = null;
+                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.Local.ToList<Especialista>();
+                }
+                else
+                {
+                    dataGridViewEspecialidades.DataSource = null;
+                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
+                }
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            try
+            {
+                cbFuncionario.DataSource = null;
+                cbFuncionario.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                cbFuncionario.SelectedIndex = idpesquisar - 1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            try
+            {
+                cbProjeto.DataSource = null;
+                cbProjeto.DataSource = camera.TipoProjetoSet.ToList<TipoProjeto>();
+                cbProjeto.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Funcionario f = (Funcionario)cbFuncionario.SelectedItem;
+                TipoProjeto tp = (TipoProjeto)cbProjeto.SelectedItem;
+
+                camera.EspecialistaSet.Add(new Especialista()
+                {
+                    TipoProjetoId = tp.Id,
+                    FuncionarioNumero = f.Numero
+                });
+                camera.SaveChanges();
+
+                dataGridViewEspecialidades.DataSource = null;
+                dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
+
+                cbProjeto.SelectedIndex = -1;
+                cbFuncionario.SelectedIndex = -1;
+            }
+            catch(NotSupportedException nsex) 
+            {
+                MessageBox.Show("Erro ao tentar guardar a especialidade\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar a especialidade\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void dataGridViewEspecialidades_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Especialista esp = (Especialista)dataGridViewEspecialidades.SelectedRows[0].DataBoundItem;
+
+                cbProjeto.Text = esp.TipoProjeto.ToString();
+                cbFuncionario.Text = esp.Funcionario.ToString();
+
+
+                btRegistar.Enabled = false;
+            }
+            catch(ArgumentOutOfRangeException aorex) 
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar a especialidade?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                try
+                {
+                    Especialista esp = (Especialista)dataGridViewEspecialidades.SelectedRows[0].DataBoundItem;
+                    camera.EspecialistaSet.Remove(esp);
+                    camera.SaveChanges();
+
+                    cbFuncionario.SelectedIndex = -1;
+                    cbProjeto.SelectedIndex = -1;
+
+                    dataGridViewEspecialidades.DataSource = null;
+                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
+
+                    btRegistar.Enabled = true;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar a especialidade\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar a especialidade\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
+
+        private void btLimpar_Click(object sender, EventArgs e)
+        {
+            cbProjeto.SelectedIndex = -1;
+            cbFuncionario.SelectedIndex = -1;
+
+            btRegistar.Enabled = true;
+            
+        }
+
+    }
+}

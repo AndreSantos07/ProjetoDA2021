@@ -81,7 +81,6 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
         }
 
         private void Promotores_Load(object sender, EventArgs e)
@@ -95,7 +94,6 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
         }
 
         private void btEliminar_Click(object sender, EventArgs e)
@@ -123,6 +121,8 @@ namespace Projeto
 
                     btGuardarAlt.Enabled = false;
                     btRegistar.Enabled = true;
+                    btEliminar.Enabled = false;
+                    tbNif.Enabled = true;
                 }
                 catch (NotSupportedException nsex)
                 {
@@ -136,12 +136,15 @@ namespace Projeto
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
             }
             
 
         }
 
+        private void listPromotores_Click(object sender, EventArgs e)
+        {
+            
+        }
 
         private void btLimpar_Click(object sender, EventArgs e)
         {
@@ -155,16 +158,18 @@ namespace Projeto
 
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
+            tbNif.Enabled = true;
+            btEliminar.Enabled = false;
         }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
+
             try
             {
                 Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
 
                 p.Nome = tbNome.Text;
-                p.NIF = Convert.ToInt32(tbNif.Text);
                 p.Morada = tbMorada.Text;
                 p.Telemovel = Convert.ToInt32(tbTelemovel.Text);
                 p.Email = tbEmail.Text;
@@ -186,6 +191,8 @@ namespace Projeto
 
                 btRegistar.Enabled = true;
                 btGuardarAlt.Enabled = false;
+                btEliminar.Enabled = false;
+                tbNif.Enabled = true;
             }
             catch (FormatException fex)
             {
@@ -218,9 +225,11 @@ namespace Projeto
         {
             try
             {
+
                 Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
                 tbNome.Text = p.Nome;
                 tbNif.Text = p.NIF.ToString();
+                tbNif.Enabled = false;
                 tbMorada.Text = p.Morada;
                 tbTelemovel.Text = p.Telemovel.ToString();
                 tbEmail.Text = p.Email;
@@ -229,14 +238,12 @@ namespace Projeto
 
                 btGuardarAlt.Enabled = true;
                 btRegistar.Enabled = false;
+                btEliminar.Enabled = true;
             }
             catch (ArgumentOutOfRangeException aorex)
             {
                 MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
-
         }
     }
 }
-

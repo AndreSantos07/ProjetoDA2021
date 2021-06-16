@@ -27,6 +27,7 @@ namespace Projeto
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
+            try
             string nome = tbNome.Text;
             int nif = Convert.ToInt32(tbNif.Text);
             String morada = tbMorada.Text;
@@ -72,9 +73,31 @@ namespace Projeto
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o promotor?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
             {
+                string nome = tbNome.Text;
+                int nif = Convert.ToInt32(tbNif.Text);
+                String morada = tbMorada.Text;
+                int telemovel = Convert.ToInt32(tbTelemovel.Text);
+                String email = tbEmail.Text;
+                String codigo = tbCodigo.Text;
+                String senha = tbSenha.Text;
+
+                camera.PromotorSet.Add(new Promotor()
+                {
+                    NIF = nif,
+                    Nome = nome,
+                    Morada = morada,
+                    Telemovel = telemovel,
+                    Email = email,
+                    CodigoAcesso = codigo,
+                    Senha = senha
+                });
                 Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
                 camera.PromotorSet.Remove(p);
                 camera.SaveChanges();
+
+                dataGridViewPromotores.DataSource = null;
+                dataGridViewPromotores.DataSource = camera.PromotorSet.ToList<Promotor>();
+                btRegistar.Enabled = true;
 
                 tbNome.Clear();
                 tbNif.Clear();
@@ -83,33 +106,100 @@ namespace Projeto
                 tbEmail.Clear();
                 tbCodigo.Clear();
                 tbSenha.Clear();
+            }
+            catch (FormatException fex)
+            {
+                MessageBox.Show("Erro ao tentar converter o nif ou telemovel\n\r" + fex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (OverflowException oex)
+            {
+                MessageBox.Show("Erro ao tentar converter o nif ou telemovel\n\r" + oex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o promotor\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o promotor\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
+        }
+
+        private void Promotores_Load(object sender, EventArgs e)
+        {
+            try
+            {
                 dataGridViewPromotores.DataSource = null;
                 dataGridViewPromotores.DataSource = camera.PromotorSet.ToList<Promotor>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 btGuardarAlt.Enabled = false;
                 btRegistar.Enabled = true;
                 btEliminar.Enabled = false;
                 tbNif.Enabled = true;
             }
-            
+
 
         }
 
+        private void btEliminar_Click(object sender, EventArgs e)
         private void listPromotores_Click(object sender, EventArgs e)
         {
-            
+
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o promotor?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                try
+                {
+                    Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
+                    camera.PromotorSet.Remove(p);
+                    camera.SaveChanges();
+
+                    tbNome.Clear();
+                    tbNif.Clear();
+                    tbMorada.Clear();
+                    tbTelemovel.Clear();
+                    tbEmail.Clear();
+                    tbCodigo.Clear();
+                    tbSenha.Clear();
+
+                    dataGridViewPromotores.DataSource = null;
+                    dataGridViewPromotores.DataSource = camera.PromotorSet.ToList<Promotor>();
+
+                    btGuardarAlt.Enabled = false;
+                    btRegistar.Enabled = true;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o promotor\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o promotor\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+
+
         }
+
 
         private void btLimpar_Click(object sender, EventArgs e)
         {
             tbNome.Clear();
-            tbNif.Clear();
-            tbMorada.Clear();
-            tbTelemovel.Clear();
-            tbEmail.Clear();
-            tbCodigo.Clear();
-            tbSenha.Clear();
+@@ -155,58 +113,39 @@ namespace Projeto
 
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
@@ -119,9 +209,20 @@ namespace Projeto
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
+            try
+            {
+                Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
 
+                p.Nome = tbNome.Text;
+                p.NIF = Convert.ToInt32(tbNif.Text);
+                p.Morada = tbMorada.Text;
+                p.Telemovel = Convert.ToInt32(tbTelemovel.Text);
+                p.Email = tbEmail.Text;
+                p.CodigoAcesso = tbCodigo.Text;
+                p.Senha = tbSenha.Text;
             Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
 
+                camera.SaveChanges();
             p.Nome = tbNome.Text;
             p.Morada = tbMorada.Text;
             p.Telemovel = Convert.ToInt32(tbTelemovel.Text);
@@ -129,11 +230,43 @@ namespace Projeto
             p.CodigoAcesso = tbCodigo.Text;
             p.Senha = tbSenha.Text;
 
+                dataGridViewPromotores.DataSource = null;
+                dataGridViewPromotores.DataSource = camera.PromotorSet.ToList<Promotor>();
             camera.SaveChanges();
 
+                tbNome.Clear();
+                tbNif.Clear();
+                tbMorada.Clear();
+                tbTelemovel.Clear();
+                tbEmail.Clear();
+                tbCodigo.Clear();
+                tbSenha.Clear();
             dataGridViewPromotores.DataSource = null;
             dataGridViewPromotores.DataSource = camera.PromotorSet.ToList<Promotor>();
 
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+            }
+            catch (FormatException fex)
+            {
+                MessageBox.Show("Erro ao tentar converter o nif ou telemovel\n\r" + fex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (OverflowException oex)
+            {
+                MessageBox.Show("Erro ao tentar converter o nif ou telemovel\n\r" + oex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o promotor\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o promotor\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Promotor\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             tbNome.Clear();
             tbNif.Clear();
             tbMorada.Clear();
@@ -149,12 +282,30 @@ namespace Projeto
         }
 
         private void bindingSource1_CurrentChanged(object sender, EventArgs e)
-        {
-
-        }
+@@ -216,26 +155,19 @@ namespace Projeto
 
         private void dataGridViewPromotores_Click(object sender, EventArgs e)
         {
+            try
+            {
+                Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
+                tbNome.Text = p.Nome;
+                tbNif.Text = p.NIF.ToString();
+                tbMorada.Text = p.Morada;
+                tbTelemovel.Text = p.Telemovel.ToString();
+                tbEmail.Text = p.Email;
+                tbCodigo.Text = p.CodigoAcesso;
+                tbSenha.Text = p.Senha;
+
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+
             Promotor p = (Promotor)dataGridViewPromotores.SelectedRows[0].DataBoundItem;
             tbNome.Text = p.Nome;
             tbNif.Text = p.NIF.ToString();

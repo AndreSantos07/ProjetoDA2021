@@ -38,58 +38,93 @@ namespace Projeto
 
         private void Documentacao_Load(object sender, EventArgs e)
         {
-            camera.Dispose();
-            camera = new Model1Container();
-            (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
+            try
+            {
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
 
+                dataGridDocumentos.DataSource = null;
+                dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
-            dataGridDocumentos.DataSource = null;
-            dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
-
-            cbTipo.DataSource = null;
-            cbTipo.DataSource = camera.TipoDocumentoSet.ToList<TipoDocumento>();
-            cbTipo.SelectedIndex = -1;
+            try
+            {
+                cbTipo.DataSource = null;
+                cbTipo.DataSource = camera.TipoDocumentoSet.ToList<TipoDocumento>();
+                cbTipo.SelectedIndex = -1;
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder a tabela TipoDocumentos\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
-            String titulo = tbTitulo.Text;
-            DateTime dataEntrega = dtDataEntrega.Value;
-            TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
-
-            camera.DocumentoSet.Add(new Documento()
+            try
             {
-                Titulo = titulo,
-                DataEntrega = dataEntrega,
-                TipoDocumentoId = tipo.Id,
-                ProjetoId = projetoRecebido.Id,
-                ProjetoProcessoId = projetoRecebido.ProcessoId,
-                ParecerNumero = null
+                String titulo = tbTitulo.Text;
+                DateTime dataEntrega = dtDataEntrega.Value;
+                TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
 
-            });
-            camera.SaveChanges();
+                camera.DocumentoSet.Add(new Documento()
+                {
+                    Titulo = titulo,
+                    DataEntrega = dataEntrega,
+                    TipoDocumentoId = tipo.Id,
+                    ProjetoId = projetoRecebido.Id,
+                    ProjetoProcessoId = projetoRecebido.ProcessoId,
+                    ParecerNumero = null
 
-            dataGridDocumentos.DataSource = null;
-            dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                });
+                camera.SaveChanges();
 
-            tbTitulo.ResetText();
-            dtDataEntrega.ResetText();
-            cbTipo.SelectedIndex = -1;
-            tbNrParecer.ResetText();
+                dataGridDocumentos.DataSource = null;
+                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+
+                tbTitulo.ResetText();
+                dtDataEntrega.ResetText();
+                cbTipo.SelectedIndex = -1;
+                tbNrParecer.ResetText();
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o documento\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o documento\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridDocumentos_Click(object sender, EventArgs e)
         {
-            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
-            tbTitulo.Text = d.Titulo;
-            dtDataEntrega.Value = d.DataEntrega;
-            cbTipo.Text = d.TipoDocumento.ToString();
-            tbNrParecer.Text = d.ParecerNumero.ToString();
+            try
+            {
+                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+                tbTitulo.Text = d.Titulo;
+                dtDataEntrega.Value = d.DataEntrega;
+                cbTipo.Text = d.TipoDocumento.ToString();
+                tbNrParecer.Text = d.ParecerNumero.ToString();
 
-            btGuardarAlt.Enabled = true;
-            btRegistar.Enabled = false;
-            btEliminar.Enabled = true;
-            btMostrarParecer.Enabled = true;
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+                btEliminar.Enabled = true;
+                btMostrarParecer.Enabled = true;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btLimpar_Click(object sender, EventArgs e)
@@ -107,26 +142,41 @@ namespace Projeto
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
-            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
-            TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
+            try
+            {
+                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+                TipoDocumento tipo = (TipoDocumento)cbTipo.SelectedItem;
 
-            d.Titulo = tbTitulo.Text;
-            d.DataEntrega = dtDataEntrega.Value;
-            d.TipoDocumentoId = tipo.Id;
+                d.Titulo = tbTitulo.Text;
+                d.DataEntrega = dtDataEntrega.Value;
+                d.TipoDocumentoId = tipo.Id;
 
-            camera.SaveChanges();
+                camera.SaveChanges();
 
-            dataGridDocumentos.DataSource = null;
-            dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                dataGridDocumentos.DataSource = null;
+                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
 
-            tbTitulo.Text = "";
-            dtDataEntrega.ResetText();
-            cbTipo.SelectedIndex = -1;
-            tbNrParecer.Text = "";
+                tbTitulo.Text = "";
+                dtDataEntrega.ResetText();
+                cbTipo.SelectedIndex = -1;
+                tbNrParecer.Text = "";
 
-            btRegistar.Enabled = true;
-            btGuardarAlt.Enabled = false;
-            btEliminar.Enabled = false;
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+                btEliminar.Enabled = false;
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o documento\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o documento\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btEliminar_Click(object sender, EventArgs e)
@@ -134,32 +184,62 @@ namespace Projeto
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o documento?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
             {
-                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
-                camera.DocumentoSet.Remove(d);
-                camera.SaveChanges();
+                try
+                {
+                    Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+                    camera.DocumentoSet.Remove(d);
+                    camera.SaveChanges();
 
-                tbTitulo.Text = "";
-                dtDataEntrega.ResetText();
-                cbTipo.SelectedIndex = -1;
-                tbNrParecer.Text = "";
+                    tbTitulo.Text = "";
+                    dtDataEntrega.ResetText();
+                    cbTipo.SelectedIndex = -1;
+                    tbNrParecer.Text = "";
 
-                dataGridDocumentos.DataSource = null;
-                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                    dataGridDocumentos.DataSource = null;
+                    dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
 
-                btRegistar.Enabled = true;
-                btGuardarAlt.Enabled = false;
-                btEliminar.Enabled = false;
+                    btRegistar.Enabled = true;
+                    btGuardarAlt.Enabled = false;
+                    btEliminar.Enabled = false;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o documento\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o documento\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
         private void btMostrarParecer_Click(object sender, EventArgs e)
         {
-            Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+            try
+            {
+                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
 
-            int idparcer = Convert.ToInt32(d.ParecerNumero);
+                int idparcer = Convert.ToInt32(d.ParecerNumero);
 
-            Parceres p = new Parceres(idparcer);
-            p.Show();
+                Parceres p = new Parceres(idparcer);
+                p.Show();
+            }
+            catch (FormatException fex)
+            {
+                MessageBox.Show("Erro ao tentar converter o numero do parecer\n\r" + fex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidCastException icex)
+            {
+                MessageBox.Show("Erro ao tentar converter o numero do parecer\n\r" + icex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (OverflowException oex)
+            {
+                MessageBox.Show("Erro ao tentar converter o numero do parecer\n\r" + oex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
     

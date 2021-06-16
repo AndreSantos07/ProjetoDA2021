@@ -84,8 +84,12 @@ namespace Projeto
                 });
                 camera.SaveChanges();
 
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
+
                 dataGridDocumentos.DataSource = null;
-                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
 
                 tbTitulo.ResetText();
                 dtDataEntrega.ResetText();
@@ -153,8 +157,12 @@ namespace Projeto
 
                 camera.SaveChanges();
 
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
+
                 dataGridDocumentos.DataSource = null;
-                dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
 
                 tbTitulo.Text = "";
                 dtDataEntrega.ResetText();
@@ -195,8 +203,12 @@ namespace Projeto
                     cbTipo.SelectedIndex = -1;
                     tbNrParecer.Text = "";
 
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from Documento in camera.DocumentoSet where Documento.ProjetoId.Equals(projetoRecebido.Id) select Documento).ToList();
+
                     dataGridDocumentos.DataSource = null;
-                    dataGridDocumentos.DataSource = camera.DocumentoSet.ToList<Documento>();
+                    dataGridDocumentos.DataSource = camera.DocumentoSet.Local.ToList<Documento>();
 
                     btRegistar.Enabled = true;
                     btGuardarAlt.Enabled = false;
@@ -221,12 +233,16 @@ namespace Projeto
         {
             try
             {
-                Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
+                if(tbNrParecer.Text != "")
+                {
+                    Documento d = (Documento)dataGridDocumentos.SelectedRows[0].DataBoundItem;
 
-                int idparcer = Convert.ToInt32(d.ParecerNumero);
+                    int idparcer = Convert.ToInt32(d.ParecerNumero);
 
-                Parceres p = new Parceres(idparcer);
-                p.Show();
+                    Parceres p = new Parceres(idparcer);
+                    p.Show();
+                }
+                
             }
             catch (FormatException fex)
             {
@@ -242,5 +258,5 @@ namespace Projeto
             }
         }
     }
-    
+
 }

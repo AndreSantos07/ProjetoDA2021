@@ -130,6 +130,10 @@ namespace Projeto
                 dtDataInicio.ResetText();
                 cbEstado.SelectedIndex = -1;
                 cbPromotor.SelectedIndex = -1;
+
+                btEliminar.Enabled = false;
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
             }
             catch (NotSupportedException nsex)
             {
@@ -165,6 +169,7 @@ namespace Projeto
 
                     btRegistar.Enabled = true;
                     btGuardarAlt.Enabled = false;
+                    btEliminar.Enabled = false;
                 }
                 catch (NotSupportedException nsex)
                 {
@@ -178,7 +183,7 @@ namespace Projeto
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                
+
             }
         }
 
@@ -190,6 +195,7 @@ namespace Projeto
 
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
+            btEliminar.Enabled = false;
         }
 
         private void btPesquisar_Click(object sender, EventArgs e)
@@ -236,6 +242,7 @@ namespace Projeto
 
                 btGuardarAlt.Enabled = true;
                 btRegistar.Enabled = false;
+                btEliminar.Enabled = true;
             }
             catch (ArgumentOutOfRangeException aorex)
             {

@@ -30,60 +30,136 @@ namespace Projeto
 
         private void Parceres_Load(object sender, EventArgs e)
         {
-            if(idparcer != -1)
+            if (idparcer != -1)
             {
-                camera.Dispose();
-                camera = new Model1Container();
-                var parcer = from Parecer in camera.ParecerSet where Parecer.Numero.Equals(idparcer) select Parecer;
-                Parecer par = parcer.ToList<Parecer>()[0];
+                try
+                {
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    var parcer = from Parecer in camera.ParecerSet where Parecer.Numero.Equals(idparcer) select Parecer;
+                    Parecer par = parcer.ToList<Parecer>()[0];
 
-                var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(par.ProjetoProcessoId) select Processo;
-                Processo pro = processo.ToList<Processo>()[0];
+                    var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(par.ProjetoProcessoId) select Processo;
+                    Processo pro = processo.ToList<Processo>()[0];
 
-                dtData.Value = par.DataParecer;
-                tbTexto.Text = par.TextoParecer;
-                cbFuncionarios.Text = par.Funcionario.ToString();
-                cbNrProjeto.Text = par.Projeto.ToString();
-                cbNrProcesso.Text = pro.ToString();
+                    dtData.Value = par.DataParecer;
+                    tbTexto.Text = par.TextoParecer;
+                    cbFuncionarios.Text = par.Funcionario.ToString();
+                    cbNrProjeto.Text = par.Projeto.ToString();
+                    cbNrProcesso.Text = pro.ToString();
+                }
+                catch(ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Parecer/Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                dataGridViewPareceres.DataSource = null;
-                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                try
+                {
+                    dataGridViewPareceres.DataSource = null;
+                    dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProcesso.DataSource = null;
-                cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+                try
+                {
+                    cbNrProcesso.DataSource = null;
+                    cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProjeto.DataSource = null;
-                cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                try
+                {
+                    cbNrProjeto.DataSource = null;
+                    cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProjetoList.DataSource = null;
-                cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
-                cbNrProjetoList.SelectedIndex = -1;
+                try
+                {
+                    cbNrProjetoList.DataSource = null;
+                    cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                    cbNrProjetoList.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbFuncionarios.DataSource = null;
-                cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                try
+                {
+                    cbFuncionarios.DataSource = null;
+                    cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
             }
             else
             {
-                dataGridViewPareceres.DataSource = null;
-                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                try
+                {
+                    dataGridViewPareceres.DataSource = null;
+                    dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProcesso.DataSource = null;
-                cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
-                cbNrProcesso.SelectedIndex = -1;
+                try
+                {
+                    cbNrProcesso.DataSource = null;
+                    cbNrProcesso.DataSource = camera.ProcessoSet.ToList<Processo>();
+                    cbNrProcesso.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProjeto.DataSource = null;
-                cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
-                cbNrProjeto.SelectedIndex = -1;
+                try
+                {
+                    cbNrProjeto.DataSource = null;
+                    cbNrProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                    cbNrProjeto.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbNrProjetoList.DataSource = null;
-                cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
-                cbNrProjetoList.SelectedIndex = -1;
+                try
+                {
+                    cbNrProjetoList.DataSource = null;
+                    cbNrProjetoList.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                    cbNrProjetoList.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
-                cbFuncionarios.DataSource = null;
-                cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
-                cbFuncionarios.SelectedIndex = -1;
-
+                try
+                {
+                    cbFuncionarios.DataSource = null;
+                    cbFuncionarios.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
+                    cbFuncionarios.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
         }
@@ -98,105 +174,153 @@ namespace Projeto
 
         private void cbNrProcesso_Leave(object sender, EventArgs e)
         {
-            if(cbNrProcesso.SelectedIndex != -1)
+            try
             {
-                Processo processo = (Processo)cbNrProcesso.SelectedItem;
+                if (cbNrProcesso.SelectedIndex != -1)
+                {
+                    Processo processo = (Processo)cbNrProcesso.SelectedItem;
 
-                camera.Dispose();
-                camera = new Model1Container();
-                //atualizar();
-                (from Projeto in camera.ProjetoSet where Projeto.ProcessoId.Equals(processo.Id) select Projeto).ToList();
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    //atualizar();
+                    (from Projeto in camera.ProjetoSet where Projeto.ProcessoId.Equals(processo.Id) select Projeto).ToList();
 
-                cbNrProjeto.DataSource = camera.ProjetoSet.Local.ToList<Projeto>();
+                    cbNrProjeto.DataSource = camera.ProjetoSet.Local.ToList<Projeto>();
+                }
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar filtrar projetos\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
         }
 
         private void cbNrProjeto_Leave(object sender, EventArgs e)
         {
-            if(cbNrProjeto.SelectedIndex != -1)
+            try
             {
-                Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+                if (cbNrProjeto.SelectedIndex != -1)
+                {
+                    Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
 
-                camera.Dispose();
-                camera = new Model1Container();
-                (from Funcionario in camera.FuncionarioSet where Funcionario.Numero.Equals(projeto.TipoProjetoId) select Funcionario).ToList();
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from Funcionario in camera.FuncionarioSet where Funcionario.Numero.Equals(projeto.TipoProjetoId) select Funcionario).ToList();
 
-                cbFuncionarios.DataSource = camera.FuncionarioSet.Local.ToList<Funcionario>();
+                    cbFuncionarios.DataSource = camera.FuncionarioSet.Local.ToList<Funcionario>();
 
+                }
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar filtrar funcionarios\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btRegistar_Click(object sender, EventArgs e)
         {
-            DateTime data = dtData.Value;
-            Processo processo = (Processo)cbNrProcesso.SelectedItem;
-            Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
-            Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
-            string texto = tbTexto.Text;
-
-            Parecer p = new Parecer()
+            try
             {
-                TextoParecer = texto,
-                DataParecer = data,
-                FuncionarioNumero1 = funcionario.Numero,
-                ProjetoId = projeto.Id,
-                ProjetoProcessoId = processo.Id
-            };
+                DateTime data = dtData.Value;
+                Processo processo = (Processo)cbNrProcesso.SelectedItem;
+                Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+                Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+                string texto = tbTexto.Text;
 
-            camera.ParecerSet.Add(p);
+                Parecer p = new Parecer()
+                {
+                    TextoParecer = texto,
+                    DataParecer = data,
+                    FuncionarioNumero1 = funcionario.Numero,
+                    ProjetoId = projeto.Id,
+                    ProjetoProcessoId = processo.Id
+                };
+
+                camera.ParecerSet.Add(p);
 
 
-            /*camera.ParecerSet.Add(new Parecer()
+                /*camera.ParecerSet.Add(new Parecer()
+                {
+                    TextoParecer = texto,
+                    DataParecer = data,
+                    FuncionarioNumero1 = funcionario.Numero,
+                    ProjetoId = projeto.Id,
+                    ProjetoProcessoId = processo.Id
+                });*/
+
+                camera.SaveChanges();
+
+                dataGridViewPareceres.DataSource = null;
+                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                btRegistar.Enabled = true;
+
+                dtData.ResetText();
+                cbFuncionarios.SelectedIndex = -1;
+                cbNrProcesso.SelectedIndex = -1;
+                cbNrProjeto.SelectedIndex = -1;
+                tbTexto.Clear();
+            }
+            catch (NotSupportedException nsex)
             {
-                TextoParecer = texto,
-                DataParecer = data,
-                FuncionarioNumero1 = funcionario.Numero,
-                ProjetoId = projeto.Id,
-                ProjetoProcessoId = processo.Id
-            });*/
-
-            camera.SaveChanges();
-
-            dataGridViewPareceres.DataSource = null;
-            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
-            btRegistar.Enabled = true;
-
-            dtData.ResetText();
-            cbFuncionarios.SelectedIndex = -1;
-            cbNrProcesso.SelectedIndex = -1;
-            cbNrProjeto.SelectedIndex = -1;
-            tbTexto.Clear();
+                MessageBox.Show("Erro ao tentar guardar o parecer\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o parecer\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
         {
-            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
-            Processo processo = (Processo)cbNrProcesso.SelectedItem;
-            Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
-            Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+            try
+            {
+                Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+                Processo processo = (Processo)cbNrProcesso.SelectedItem;
+                Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
+                Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
 
 
-            p.TextoParecer = tbTexto.Text;
-            p.DataParecer = dtData.Value;
-            p.FuncionarioNumero1 = funcionario.Numero;
-            p.ProjetoId = projeto.Id;
-            p.ProjetoProcessoId = processo.Id;
+                p.TextoParecer = tbTexto.Text;
+                p.DataParecer = dtData.Value;
+                p.FuncionarioNumero1 = funcionario.Numero;
+                p.ProjetoId = projeto.Id;
+                p.ProjetoProcessoId = processo.Id;
 
-            camera.SaveChanges();
+                camera.SaveChanges();
 
-            dataGridViewPareceres.DataSource = null;
-            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+                dataGridViewPareceres.DataSource = null;
+                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
 
-            tbTexto.Clear();
-            dtData.ResetText();
-            cbFuncionarios.SelectedIndex = -1;
-            cbNrProcesso.SelectedIndex = -1;
-            cbNrProjeto.SelectedIndex = -1;
+                tbTexto.Clear();
+                dtData.ResetText();
+                cbFuncionarios.SelectedIndex = -1;
+                cbNrProcesso.SelectedIndex = -1;
+                cbNrProjeto.SelectedIndex = -1;
 
-            btRegistar.Enabled = true;
-            btGuardarAlt.Enabled = false;
-            btAtribuirDoc.Enabled = false;
+                btRegistar.Enabled = true;
+                btGuardarAlt.Enabled = false;
+                btAtribuirDoc.Enabled = false;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à DataGriedView\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o parecer\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o parecer\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridViewPareceres_Click(object sender, EventArgs e)
@@ -204,53 +328,93 @@ namespace Projeto
             /*camera.Dispose();
             camera = new Model1Container();*/
 
-            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+            try
+            {
+                Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
 
-            tbTexto.Text = p.TextoParecer;
-            dtData.Value = p.DataParecer;
-            cbFuncionarios.Text = p.Funcionario.ToString();
-            cbNrProjeto.Text = p.Projeto.ToString();
+                tbTexto.Text = p.TextoParecer;
+                dtData.Value = p.DataParecer;
+                cbFuncionarios.Text = p.Funcionario.ToString();
+                cbNrProjeto.Text = p.Projeto.ToString();
 
-            var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(p.ProjetoProcessoId) select Processo;
-            Processo pro = processo.ToList<Processo>()[0];
+                var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(p.ProjetoProcessoId) select Processo;
+                Processo pro = processo.ToList<Processo>()[0];
 
-            cbNrProcesso.Text = pro.ToString();
+                cbNrProcesso.Text = pro.ToString();
 
-            btGuardarAlt.Enabled = true;
-            btRegistar.Enabled = false;
-            btAtribuirDoc.Enabled = true;
+                btGuardarAlt.Enabled = true;
+                btRegistar.Enabled = false;
+                btAtribuirDoc.Enabled = true;
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            cbNrProjetoList.Text = null;
-            dataGridViewPareceres.DataSource = null;
-            dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+            //mostrar todos
+            try
+            {
+                cbNrProjetoList.Text = null;
+                dataGridViewPareceres.DataSource = null;
+                dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btPesquisar_Click(object sender, EventArgs e)
         {
-            Projeto p = (Projeto)cbNrProjetoList.SelectedItem;
+            try
+            {
+                Projeto p = (Projeto)cbNrProjetoList.SelectedItem;
 
-            camera.Dispose();
-            camera = new Model1Container();
-            (from Parecer in camera.ParecerSet where Parecer.ProjetoId.Equals(p.Id) select Parecer).ToList();
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Parecer in camera.ParecerSet where Parecer.ProjetoId.Equals(p.Id) select Parecer).ToList();
 
-            dataGridViewPareceres.DataSource = camera.ParecerSet.Local.ToList<Parecer>();
+                dataGridViewPareceres.DataSource = camera.ParecerSet.Local.ToList<Parecer>();
+            }
+            catch(ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btSair_Click(object sender, EventArgs e)
         {
-            this.Close();
+            try
+            {
+                this.Close();
+            }
+            catch(InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar fechar este form\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btAtribuirDoc_Click(object sender, EventArgs e)
         {
 
-            Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+            try
+            {
+                Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
 
-            AtribuirDocs ad = new AtribuirDocs(p.Numero, p.ProjetoId);
-            ad.Show();
+                AtribuirDocs ad = new AtribuirDocs(p.Numero, p.ProjetoId);
+                ad.Show();
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à DataGriedView\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btLimpar_Click(object sender, EventArgs e)

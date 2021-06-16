@@ -1,0 +1,198 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Projeto
+{
+    public partial class ProjetosAtribuidos : Form
+    {
+        private Model1Container camera;
+        public ProjetosAtribuidos()
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+        }
+
+        Especialista especialista;
+        public string nomeFuncionario;
+
+        public ProjetosAtribuidos(string receber, Especialista especial)
+        {
+            InitializeComponent();
+            camera = new Model1Container();
+            especialista = especial;
+            nomeFuncionario = receber;
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ProjetosAtribuidos_Load(object sender, EventArgs e)
+        {
+            if (especialista != null)
+            {
+                try
+                {
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from ProjetoAtribuido in camera.ProjetoAtribuidoSet where ProjetoAtribuido.FuncionarioNumero.Equals(especialista.FuncionarioNumero) select ProjetoAtribuido).ToList();
+
+
+                    dataGridViewProjetosAtribuidos.DataSource = null;
+                    dataGridViewProjetosAtribuidos.DataSource = camera.ProjetoAtribuidoSet.Local.ToList<ProjetoAtribuido>();
+                }
+                catch(ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela ProjetoAtribuido\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                try
+                {
+                    (from Projeto in camera.ProjetoSet where Projeto.TipoProjetoId.Equals(especialista.TipoProjetoId) select Projeto).ToList();
+
+                    cbProjeto.DataSource = null;
+                    cbProjeto.DataSource = camera.ProjetoSet.ToList<Projeto>();
+                    cbProjeto.SelectedIndex = -1;
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                tbNomeF.Text = nomeFuncionario;
+
+            }
+            else
+            {
+                MessageBox.Show("Erro ao passar o objeto especialista\n\r", "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void btRegistar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DateTime data = DateTime.Now;
+                Projeto projeto = (Projeto)cbProjeto.SelectedItem;
+
+                camera.ProjetoAtribuidoSet.Add(new ProjetoAtribuido()
+                {
+                    Data = data,
+                    ProjetoId = projeto.Id,
+                    ProjetoProcessoId = projeto.ProcessoId,
+                    FuncionarioNumero = especialista.FuncionarioNumero
+                });
+                camera.SaveChanges();
+
+                camera.Dispose();
+                camera = new Model1Container();
+                (from ProjetoAtribuido in camera.ProjetoAtribuidoSet where ProjetoAtribuido.FuncionarioNumero.Equals(especialista.FuncionarioNumero) select ProjetoAtribuido).ToList();
+                dataGridViewProjetosAtribuidos.DataSource = null;
+                dataGridViewProjetosAtribuidos.DataSource = camera.ProjetoAtribuidoSet.Local.ToList<ProjetoAtribuido>();
+
+
+                btRegistar.Enabled = true;
+
+                cbProjeto.SelectedIndex = -1;
+            }
+            catch (NotSupportedException nsex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto atribuido\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                MessageBox.Show("Erro ao tentar guardar o projeto atribuido\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (ArgumentNullException anex)
+            {
+                MessageBox.Show("Erro ao tentar aceder à tabela ProjetoAtribuido\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void dataGridViewProjetosAtribuidos_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ProjetoAtribuido pa = (ProjetoAtribuido)dataGridViewProjetosAtribuidos.SelectedRows[0].DataBoundItem;
+
+                if (pa != null)
+                {
+
+                    cbProjeto.Text = pa.Projeto.ToString();
+
+
+                    btRegistar.Enabled = false;
+                    btEliminar.Enabled = true;
+                    btLimpar.Enabled = true;
+
+                }
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btLimpar_Click(object sender, EventArgs e)
+        {
+            cbProjeto.SelectedIndex = -1;
+            cbProjeto.ResetText();
+
+
+            btRegistar.Enabled = true;
+            btEliminar.Enabled = false;
+            btLimpar.Enabled = false;
+        }
+
+        
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o Projeto atribuido?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                try
+                {
+                    ProjetoAtribuido pa = (ProjetoAtribuido)dataGridViewProjetosAtribuidos.SelectedRows[0].DataBoundItem;
+                    camera.ProjetoAtribuidoSet.Remove(pa);
+                    camera.SaveChanges();
+
+
+                    cbProjeto.SelectedIndex = -1;
+
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from ProjetoAtribuido in camera.ProjetoAtribuidoSet where ProjetoAtribuido.FuncionarioNumero.Equals(especialista.FuncionarioNumero) select ProjetoAtribuido).ToList();
+                    dataGridViewProjetosAtribuidos.DataSource = null;
+                    dataGridViewProjetosAtribuidos.DataSource = camera.ProjetoAtribuidoSet.Local.ToList<ProjetoAtribuido>();
+
+                    btRegistar.Enabled = true;
+                    btLimpar.Enabled = false;
+                    btEliminar.Enabled = false;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o projeto atribuido\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o projeto atribuido\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela ProjetoAtribuido\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+    }
+}

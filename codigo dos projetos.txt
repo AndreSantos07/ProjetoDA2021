@@ -12,7 +12,6 @@ namespace Projeto
 {
     public partial class Projetos : Form
     {
-        public String teste = "teste";
         private Model1Container camera;
 
         public Projetos()
@@ -23,14 +22,13 @@ namespace Projeto
 
         private void Projetos_Load(object sender, EventArgs e)
         {
-            //dataGridViewProjetos.DataSource = null;
-            //dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
+
             try
             {
                 bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
                 bindingSourceProjetos.ResetBindings(false);
             }
-            catch(ArgumentNullException anex)
+            catch (ArgumentNullException anex)
             {
                 MessageBox.Show("Erro ao tentar aceder a tabela Projeto\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -82,7 +80,7 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao abrir o form Documentacao\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+
 
         }
 
@@ -96,16 +94,7 @@ namespace Projeto
                 DateTime dataAprovacao = dtDataAprov.Value;
                 Processo p = (Processo)cbNrProcesso.SelectedItem;
 
-                /*foreach (Projeto projeto in p.Projeto)
-                {
-
-                    if(tipo.TipoProjetoAscendenteId != projeto.TipoProjetoId)
-                    {
-                        MessageBox.Show("Precisa criar o {0} primeiro", projeto.TipoProjeto.Designacao, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        cbTipoProjeto.Focus();
-                    }
-                    else
-                    {*/
+                
                 camera.ProjetoSet.Add(new Projeto()
                 {
                     DataEntrada = dataEntrada,
@@ -116,19 +105,16 @@ namespace Projeto
                 });
                 camera.SaveChanges();
 
-                //dataGridViewProjetos.DataSource = null;
-                //dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
 
-                bindingSourceProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
-                bindingSourceProjetos.ResetBindings(false);
+                dataGridViewProjetos.DataSource = null;
+                dataGridViewProjetos.DataSource = camera.ProjetoSet.ToList<Projeto>();
 
                 dtEntrada.ResetText();
                 dtDataAprov.ResetText();
                 tbEstado.Text = null;
                 cbTipoProjeto.SelectedIndex = -1;
                 cbNrProcesso.SelectedIndex = -1;
-                /*}
-            }*/
+     
             }
             catch (NotSupportedException nsex)
             {
@@ -147,7 +133,7 @@ namespace Projeto
 
         private void cbTipoProjeto_SelectedIndexChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void cbTipoProjeto_Leave(object sender, EventArgs e)
@@ -160,7 +146,7 @@ namespace Projeto
 
                 dtDataAprov.Value = dataAprovacao;
             }
-            catch (ArgumentOutOfRangeException aorex) 
+            catch (ArgumentOutOfRangeException aorex)
             {
                 MessageBox.Show("Erro ao calcular a data de aprovação\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -180,6 +166,8 @@ namespace Projeto
 
                 btGuardarAlt.Enabled = true;
                 btRegistar.Enabled = false;
+                btEliminar.Enabled = true;
+                btDocumentação.Enabled = true;
             }
             catch (ArgumentOutOfRangeException aorex)
             {
@@ -212,6 +200,11 @@ namespace Projeto
                 tbEstado.Text = null;
                 cbTipoProjeto.SelectedIndex = -1;
                 cbNrProcesso.SelectedIndex = -1;
+
+                btEliminar.Enabled = false;
+                btGuardarAlt.Enabled = false;
+                btRegistar.Enabled = true;
+                btDocumentação.Enabled = false;
             }
             catch (NotSupportedException nsex)
             {
@@ -249,6 +242,8 @@ namespace Projeto
 
                     btRegistar.Enabled = true;
                     btGuardarAlt.Enabled = false;
+                    btEliminar.Enabled = false;
+                    btDocumentação.Enabled = false;
                 }
                 catch (NotSupportedException nsex)
                 {
@@ -275,6 +270,8 @@ namespace Projeto
 
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
+            btEliminar.Enabled = false;
+            btDocumentação.Enabled = false;
         }
 
         private void btPesquisar_Click(object sender, EventArgs e)

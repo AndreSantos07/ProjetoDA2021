@@ -48,7 +48,7 @@ namespace Projeto
                     cbNrProjeto.Text = par.Projeto.ToString();
                     cbNrProcesso.Text = pro.ToString();
                 }
-                catch(ArgumentNullException anex)
+                catch (ArgumentNullException anex)
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela Parecer/Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -166,7 +166,7 @@ namespace Projeto
 
         public void atualizar()
         {
-            foreach(var entity in camera.ChangeTracker.Entries())
+            foreach (var entity in camera.ChangeTracker.Entries())
             {
                 entity.Reload();
             }
@@ -192,7 +192,7 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar filtrar projetos\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+
         }
 
         private void cbNrProjeto_Leave(object sender, EventArgs e)
@@ -205,9 +205,11 @@ namespace Projeto
 
                     camera.Dispose();
                     camera = new Model1Container();
-                    (from Funcionario in camera.FuncionarioSet where Funcionario.Numero.Equals(projeto.TipoProjetoId) select Funcionario).ToList();
+                    //(from Funcionario in camera.FuncionarioSet where Funcionario.Numero.Equals(projeto.TipoProjetoId) select Funcionario).ToList();
+                    (from ProjetoAtribuido in camera.ProjetoAtribuidoSet where ProjetoAtribuido.ProjetoId.Equals(projeto.Id) select ProjetoAtribuido).ToList();
 
-                    cbFuncionarios.DataSource = camera.FuncionarioSet.Local.ToList<Funcionario>();
+                    cbFuncionarios.DataSource = null;
+                    cbFuncionarios.DataSource = camera.ProjetoAtribuidoSet.Local.ToList<ProjetoAtribuido>();
 
                 }
             }
@@ -224,14 +226,16 @@ namespace Projeto
                 DateTime data = dtData.Value;
                 Processo processo = (Processo)cbNrProcesso.SelectedItem;
                 Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
-                Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+                //Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+                ProjetoAtribuido pa = (ProjetoAtribuido)cbFuncionarios.SelectedItem;
                 string texto = tbTexto.Text;
 
                 Parecer p = new Parecer()
                 {
                     TextoParecer = texto,
                     DataParecer = data,
-                    FuncionarioNumero1 = funcionario.Numero,
+                    //FuncionarioNumero1 = funcionario.Numero,
+                    FuncionarioNumero1 = pa.FuncionarioNumero,
                     ProjetoId = projeto.Id,
                     ProjetoProcessoId = processo.Id
                 };
@@ -252,7 +256,8 @@ namespace Projeto
 
                 dataGridViewPareceres.DataSource = null;
                 dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
-                btRegistar.Enabled = true;
+                
+                btEliminar.Enabled = false;
 
                 dtData.ResetText();
                 cbFuncionarios.SelectedIndex = -1;
@@ -272,6 +277,10 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch(NullReferenceException nre)
+            {
+                MessageBox.Show("Erro ao tentar inserir um Parecer\n\r" + nre.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btGuardarAlt_Click(object sender, EventArgs e)
@@ -281,12 +290,13 @@ namespace Projeto
                 Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
                 Processo processo = (Processo)cbNrProcesso.SelectedItem;
                 Projeto projeto = (Projeto)cbNrProjeto.SelectedItem;
-                Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+                //Funcionario funcionario = (Funcionario)cbFuncionarios.SelectedItem;
+                ProjetoAtribuido pa = (ProjetoAtribuido)cbFuncionarios.SelectedItem;
 
 
                 p.TextoParecer = tbTexto.Text;
                 p.DataParecer = dtData.Value;
-                p.FuncionarioNumero1 = funcionario.Numero;
+                p.FuncionarioNumero1 = pa.FuncionarioNumero;
                 p.ProjetoId = projeto.Id;
                 p.ProjetoProcessoId = processo.Id;
 
@@ -304,6 +314,7 @@ namespace Projeto
                 btRegistar.Enabled = true;
                 btGuardarAlt.Enabled = false;
                 btAtribuirDoc.Enabled = false;
+                btEliminar.Enabled = false;
             }
             catch (ArgumentOutOfRangeException aorex)
             {
@@ -335,7 +346,12 @@ namespace Projeto
                 tbTexto.Text = p.TextoParecer;
                 dtData.Value = p.DataParecer;
                 cbFuncionarios.Text = p.Funcionario.ToString();
-                cbNrProjeto.Text = p.Projeto.ToString();
+              
+
+                var projeto = from Projeto in camera.ProjetoSet where Projeto.Id.Equals(p.ProjetoId) select Projeto;
+                Projeto proj = projeto.ToList<Projeto>()[0];
+
+                cbNrProjeto.Text = proj.ToString();
 
                 var processo = from Processo in camera.ProcessoSet where Processo.Id.Equals(p.ProjetoProcessoId) select Processo;
                 Processo pro = processo.ToList<Processo>()[0];
@@ -345,6 +361,7 @@ namespace Projeto
                 btGuardarAlt.Enabled = true;
                 btRegistar.Enabled = false;
                 btAtribuirDoc.Enabled = true;
+                btEliminar.Enabled = true;
             }
             catch (ArgumentOutOfRangeException aorex)
             {
@@ -353,6 +370,10 @@ namespace Projeto
             catch (ArgumentNullException anex)
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Processo\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch(System.NullReferenceException ne)
+            {
+                MessageBox.Show("Erro ao carregar a informação\n\r" + ne.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -383,7 +404,7 @@ namespace Projeto
 
                 dataGridViewPareceres.DataSource = camera.ParecerSet.Local.ToList<Parecer>();
             }
-            catch(ArgumentNullException anex)
+            catch (ArgumentNullException anex)
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -395,7 +416,7 @@ namespace Projeto
             {
                 this.Close();
             }
-            catch(InvalidOperationException ioex)
+            catch (InvalidOperationException ioex)
             {
                 MessageBox.Show("Erro ao tentar fechar este form\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -429,6 +450,53 @@ namespace Projeto
             btAtribuirDoc.Enabled = false;
             btRegistar.Enabled = true;
             btGuardarAlt.Enabled = false;
+            btEliminar.Enabled = false;
+        }
+
+        private void btEliminar_Click(object sender, EventArgs e)
+        {
+            DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o parcer?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (resposta == DialogResult.Yes)
+            {
+                try
+                {
+                    Parecer p = (Parecer)dataGridViewPareceres.SelectedRows[0].DataBoundItem;
+                    camera.ParecerSet.Remove(p);
+                    camera.SaveChanges();
+
+                    dtData.ResetText();
+                    cbNrProcesso.SelectedIndex = -1;
+                    cbNrProjeto.SelectedIndex = -1;
+                    cbFuncionarios.SelectedIndex = -1;
+                    tbTexto.Text = "";
+
+                    dataGridViewPareceres.DataSource = null;
+                    dataGridViewPareceres.DataSource = camera.ParecerSet.ToList<Parecer>();
+
+                    btRegistar.Enabled = true;
+                    btGuardarAlt.Enabled = false;
+                    btEliminar.Enabled = false;
+                    btAtribuirDoc.Enabled = false;
+                }
+                catch (NotSupportedException nsex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o parecer\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (InvalidOperationException ioex)
+                {
+                    MessageBox.Show("Erro ao tentar apagar o parecer\n\r" + ioex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (ArgumentNullException anex)
+                {
+                    MessageBox.Show("Erro ao tentar aceder à tabela parecer\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch(System.Data.Entity.Infrastructure.DbUpdateException dbe)
+                {
+                    MessageBox.Show("Erro ao apagar o parecer, verifique se apagou todos os documentos associados\n\r" + dbe.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                
+
+            }
         }
     }
 }

@@ -123,6 +123,13 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            btEliminar.Enabled = false;
+        }
+
+        private void dataGridViewDocumentosAtribuidos_Click(object sender, EventArgs e)
+        {
+            btEliminar.Enabled = true;
         }
     }
 }

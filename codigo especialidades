@@ -19,50 +19,39 @@ namespace Projeto
             camera = new Model1Container();
         }
 
-        public int idpesquisar;
+        Funcionario func;
 
-        public Especialidades(int recebido)
+        public Especialidades(Funcionario recebido)
         {
             InitializeComponent();
             camera = new Model1Container();
-            idpesquisar = recebido;
+            func = recebido;
         }
 
         private void Especialidades_Load(object sender, EventArgs e)
         {
             try
             {
-                if (idpesquisar != -1)
-                {
-                    //esta consulta serve para filtrar as especialidades já existentes de um funcionario
-                    camera.Dispose();
-                    camera = new Model1Container();
-                    (from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(idpesquisar) select Especialista).ToList();
+                
+                //esta consulta serve para filtrar as especialidades já existentes de um funcionario
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(func.Numero) select Especialista).ToList();
 
-                    dataGridViewEspecialidades.DataSource = null;
-                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.Local.ToList<Especialista>();
-                }
-                else
-                {
-                    dataGridViewEspecialidades.DataSource = null;
-                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
-                }
+                dataGridViewEspecialidades.DataSource = null;
+                dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.Local.ToList<Especialista>();
+                
+                
             }
             catch (ArgumentNullException anex)
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            try
-            {
-                cbFuncionario.DataSource = null;
-                cbFuncionario.DataSource = camera.FuncionarioSet.ToList<Funcionario>();
-                cbFuncionario.SelectedIndex = idpesquisar - 1;
-            }
-            catch (ArgumentNullException anex)
-            {
-                MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            
+            tbFuncionario.Text = "";
+            tbFuncionario.Text = func.Nome;
+                   
 
             try
             {
@@ -81,23 +70,25 @@ namespace Projeto
         {
             try
             {
-                Funcionario f = (Funcionario)cbFuncionario.SelectedItem;
                 TipoProjeto tp = (TipoProjeto)cbProjeto.SelectedItem;
 
                 camera.EspecialistaSet.Add(new Especialista()
                 {
                     TipoProjetoId = tp.Id,
-                    FuncionarioNumero = f.Numero
+                    FuncionarioNumero = func.Numero
                 });
                 camera.SaveChanges();
 
+                camera.Dispose();
+                camera = new Model1Container();
+                (from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(func.Numero) select Especialista).ToList();
+
                 dataGridViewEspecialidades.DataSource = null;
-                dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
+                dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.Local.ToList<Especialista>();
 
                 cbProjeto.SelectedIndex = -1;
-                cbFuncionario.SelectedIndex = -1;
             }
-            catch(NotSupportedException nsex) 
+            catch (NotSupportedException nsex)
             {
                 MessageBox.Show("Erro ao tentar guardar a especialidade\n\r" + nsex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -109,6 +100,11 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch (NullReferenceException nrex)
+            {
+                MessageBox.Show("Campos em branco\n\r" + nrex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
 
         }
 
@@ -119,16 +115,16 @@ namespace Projeto
                 Especialista esp = (Especialista)dataGridViewEspecialidades.SelectedRows[0].DataBoundItem;
 
                 cbProjeto.Text = esp.TipoProjeto.ToString();
-                cbFuncionario.Text = esp.Funcionario.ToString();
 
 
                 btRegistar.Enabled = false;
+                btEliminar.Enabled = true;
             }
-            catch(ArgumentOutOfRangeException aorex) 
+            catch (ArgumentOutOfRangeException aorex)
             {
                 MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+
         }
 
         private void btEliminar_Click(object sender, EventArgs e)
@@ -142,13 +138,17 @@ namespace Projeto
                     camera.EspecialistaSet.Remove(esp);
                     camera.SaveChanges();
 
-                    cbFuncionario.SelectedIndex = -1;
                     cbProjeto.SelectedIndex = -1;
 
+                    camera.Dispose();
+                    camera = new Model1Container();
+                    (from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(func.Numero) select Especialista).ToList();
+
                     dataGridViewEspecialidades.DataSource = null;
-                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.ToList<Especialista>();
+                    dataGridViewEspecialidades.DataSource = camera.EspecialistaSet.Local.ToList<Especialista>();
 
                     btRegistar.Enabled = true;
+                    btEliminar.Enabled = false;
                 }
                 catch (NotSupportedException nsex)
                 {
@@ -169,10 +169,10 @@ namespace Projeto
         private void btLimpar_Click(object sender, EventArgs e)
         {
             cbProjeto.SelectedIndex = -1;
-            cbFuncionario.SelectedIndex = -1;
 
             btRegistar.Enabled = true;
-            
+            btEliminar.Enabled = false;
+
         }
 
     }

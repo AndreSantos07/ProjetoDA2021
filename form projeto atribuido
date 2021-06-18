@@ -49,7 +49,7 @@ namespace Projeto
                     dataGridViewProjetosAtribuidos.DataSource = null;
                     dataGridViewProjetosAtribuidos.DataSource = camera.ProjetoAtribuidoSet.Local.ToList<ProjetoAtribuido>();
                 }
-                catch(ArgumentNullException anex)
+                catch (ArgumentNullException anex)
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela ProjetoAtribuido\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -101,6 +101,7 @@ namespace Projeto
 
 
                 btRegistar.Enabled = true;
+                btEliminar.Enabled = false;
 
                 cbProjeto.SelectedIndex = -1;
             }
@@ -119,31 +120,8 @@ namespace Projeto
 
         }
 
-        private void dataGridViewProjetosAtribuidos_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                ProjetoAtribuido pa = (ProjetoAtribuido)dataGridViewProjetosAtribuidos.SelectedRows[0].DataBoundItem;
 
-                if (pa != null)
-                {
-
-                    cbProjeto.Text = pa.Projeto.ToString();
-
-
-                    btRegistar.Enabled = false;
-                    btEliminar.Enabled = true;
-                    btLimpar.Enabled = true;
-
-                }
-            }
-            catch (ArgumentOutOfRangeException aorex)
-            {
-                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btLimpar_Click(object sender, EventArgs e)
+        private void btLimpar_Click_1(object sender, EventArgs e)
         {
             cbProjeto.SelectedIndex = -1;
             cbProjeto.ResetText();
@@ -154,9 +132,7 @@ namespace Projeto
             btLimpar.Enabled = false;
         }
 
-        
-
-        private void btEliminar_Click(object sender, EventArgs e)
+        private void btEliminar_Click_1(object sender, EventArgs e)
         {
             DialogResult resposta = MessageBox.Show("Deseja mesmo eliminar o Projeto atribuido?", "Eliminar?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (resposta == DialogResult.Yes)
@@ -192,6 +168,30 @@ namespace Projeto
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela ProjetoAtribuido\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void dataGridViewProjetosAtribuidos_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                ProjetoAtribuido pa = (ProjetoAtribuido)dataGridViewProjetosAtribuidos.SelectedRows[0].DataBoundItem;
+
+                if (pa != null)
+                {
+
+                    cbProjeto.Text = pa.Projeto.ToString();
+
+
+                    btRegistar.Enabled = false;
+                    btEliminar.Enabled = true;
+                    btLimpar.Enabled = true;
+
+                }
+            }
+            catch (ArgumentOutOfRangeException aorex)
+            {
+                MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -69,7 +69,10 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+            catch (NullReferenceException nrex)
+            {
+                MessageBox.Show("Campos em branco\n\r" + nrex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Funcionarios_Load(object sender, EventArgs e)

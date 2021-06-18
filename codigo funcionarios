@@ -70,7 +70,6 @@ namespace Projeto
                 MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
         }
 
         private void Funcionarios_Load(object sender, EventArgs e)
@@ -166,7 +165,6 @@ namespace Projeto
                 MessageBox.Show("Operação inválida - Use a seta para selecionar os dados\n\r" + aorex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-
         }
 
         private int getindice(ComboBox cb, TipoProjeto tp)
@@ -232,7 +230,7 @@ namespace Projeto
                 {
                     MessageBox.Show("Erro ao tentar aceder à tabela Funcionario\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                catch(System.Data.Entity.Infrastructure.DbUpdateException dbe)
+                catch (System.Data.Entity.Infrastructure.DbUpdateException dbe)
                 {
                     MessageBox.Show("Erro ao tentar apagar o funcionario, verifique se não tem projetos ou especialidades associadas\n\r" + dbe.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -255,6 +253,10 @@ namespace Projeto
             catch (ArgumentNullException anex)
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Especialista\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch(ArgumentOutOfRangeException outr)
+            {
+                MessageBox.Show("Erro ao tentar atribuir projeto, tem de atribuir uma especialidade ao funcionário primeiro\n\r" + outr.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

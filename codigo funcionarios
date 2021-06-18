@@ -15,7 +15,7 @@ namespace Projeto
     {
 
         private Model1Container camera;
-        public int idenviar = -1;
+        Funcionario fenvia;
         public string nomeenviar;
 
         public Funcionarios()
@@ -73,6 +73,8 @@ namespace Projeto
             {
                 MessageBox.Show("Campos em branco\n\r" + nrex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+
         }
 
         private void Funcionarios_Load(object sender, EventArgs e)
@@ -144,6 +146,7 @@ namespace Projeto
             try
             {
                 Funcionario f = (Funcionario)dataGridViewFuncionarios.SelectedRows[0].DataBoundItem;
+                
 
                 if (f != null)
                 {
@@ -151,7 +154,8 @@ namespace Projeto
 
                     tbNome.Text = f.Nome;
                     tbExtencao.Text = f.Extencao.ToString();
-                    idenviar = f.Numero;
+                    //idenviar = f.Numero;
+                    fenvia = f;
                     nomeenviar = f.Nome;
 
 
@@ -185,7 +189,8 @@ namespace Projeto
         {
             tbNome.Clear();
             tbExtencao.Clear();
-            idenviar = -1;
+            //idenviar = -1;
+            fenvia = null;
             nomeenviar = null;
 
             btGuardarAlt.Enabled = false;
@@ -247,7 +252,7 @@ namespace Projeto
                 camera.Dispose();
                 camera = new Model1Container();
 
-                var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(idenviar) select Especialista;
+                var esp = from Especialista in camera.EspecialistaSet where Especialista.FuncionarioNumero.Equals(fenvia.Numero) select Especialista;
                 Especialista especialista = esp.ToList<Especialista>()[0];
 
                 ProjetosAtribuidos pa = new ProjetosAtribuidos(nomeenviar, especialista);
@@ -265,7 +270,7 @@ namespace Projeto
 
         private void btespecialidade_Click(object sender, EventArgs e)
         {
-            Especialidades esp = new Especialidades(idenviar);
+            Especialidades esp = new Especialidades(fenvia);
             esp.Show();
 
         }

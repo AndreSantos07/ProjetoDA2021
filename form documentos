@@ -108,6 +108,10 @@ namespace Projeto
             {
                 MessageBox.Show("Erro ao tentar aceder à tabela Documento\n\r" + anex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            catch (NullReferenceException nrex)
+            {
+                MessageBox.Show("Campos em branco\n\r" + nrex.Message, "ERRO", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void dataGridDocumentos_Click(object sender, EventArgs e)
